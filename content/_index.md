@@ -1,315 +1,312 @@
-# Command Line Interface Guidelines
+# 命令行界面设计指南 {#command-line-interface-guidelines}
 
-An [open-source](https://github.com/cli-guidelines/cli-guidelines) guide to help you write better command-line programs, taking traditional UNIX principles and updating them for the modern day.  
+这是一份[开源](https://github.com/cli-guidelines/cli-guidelines)指南，旨在帮助你编写更好的命令行程序。它以传统 UNIX 原则为基础，并针对现代需求进行了更新。
 
-## Authors {#authors}
+## 作者 {#authors}
 
 **Aanand Prasad** \
-Engineer at Squarespace, co-creator of Docker Compose. \
+Squarespace 工程师，Docker Compose 联合创建者。\
 [@aanandprasad](https://twitter.com/aanandprasad)
 
 **Ben Firshman** \
-Co-creator [Replicate](https://replicate.ai/), co-creator of Docker Compose. \
+[Replicate](https://replicate.ai/) 联合创建者，Docker Compose 联合创建者。\
 [@bfirsh](https://twitter.com/bfirsh)
 
 **Carl Tashian** \
-Offroad Engineer at [Smallstep](https://smallstep.com/), first engineer at Zipcar, co-founder Trove. \
+[Smallstep](https://smallstep.com/) Offroad 工程师，Zipcar 首位工程师，Trove 联合创始人。\
 [tashian.com](https://tashian.com/) [@tashian](https://twitter.com/tashian)
 
 **Eva Parish** \
-Technical Writer at Squarespace, O’Reilly contributor.\
+Squarespace 技术文档工程师，O'Reilly 撰稿人。\
 [evaparish.com](https://evaparish.com/) [@evpari](https://twitter.com/evpari)
 
-Design by [Mark Hurrell](https://mhurrell.co.uk/). Thanks to Andreas Jansson for early contributions, and Andrew Reitz, Ashley Williams, Brendan Falk, Chester Ramey, Dj Walker-Morgan, Jacob Maine, James Coglan, Michael Dwan, and Steve Klabnik for reviewing drafts.
+设计：[Mark Hurrell](https://mhurrell.co.uk/)。感谢 Andreas Jansson 的早期贡献，以及 Andrew Reitz、Ashley Williams、Brendan Falk、Chester Ramey、Dj Walker-Morgan、Jacob Maine、James Coglan、Michael Dwan 和 Steve Klabnik 审阅草稿。
 
 <iframe class="github-button" src="https://ghbtns.com/github-btn.html?user=cli-guidelines&repo=cli-guidelines&type=star&count=true&size=large" frameborder="0" scrolling="0" width="170" height="30" title="GitHub"></iframe>
 
-[Join us on Discord](https://discord.gg/EbAW5rUCkE) if you want to discuss the guide or CLI design.
+如果你想讨论本指南或 CLI 设计，欢迎[加入我们的 Discord](https://discord.gg/EbAW5rUCkE)。
 
 
-## Foreword {#foreword}
+## 前言 {#foreword}
 
-In the 1980s, if you wanted a personal computer to do something for you, you needed to know what to type when confronted with `C:\>` or `~$`.
-Help came in the form of thick, spiral-bound manuals.
-Error messages were opaque.
-There was no Stack Overflow to save you.
-But if you were lucky enough to have internet access, you could get help from Usenet—an early internet community filled with other people who were just as frustrated as you were.
-They could either help you solve your problem, or at least provide some moral support and camaraderie.
+在 1980 年代，如果你想让个人电脑为你做些什么，你需要知道在面对 `C:\>` 或 `~$` 时该输入什么。
+帮助来自厚重的螺旋装订手册。
+错误信息晦涩难懂。
+那时还没有 Stack Overflow 可以拯救你。
+但如果你有幸能上网，你可以从 Usenet 获得帮助——一个早期的互联网社区，里面都是和你一样沮丧的人。
+他们要么帮你解决问题，要么至少提供一些精神支持和同病相怜的慰藉。
 
-Forty years later, computers have become so much more accessible to everyone, often at the expense of low-level end user control.
-On many devices, there is no command-line access at all, in part because it goes against the corporate interests of walled gardens and app stores.
+四十年后，计算机变得更加普及，但这往往是以牺牲底层终端用户控制权为代价的。
+在许多设备上，根本没有命令行访问权限，部分原因是这与围墙花园和应用商店的商业利益相悖。
 
-Most people today don’t know what the command line is, much less why they would want to bother with it.
-As computing pioneer Alan Kay said in [a 2017 interview](https://www.fastcompany.com/40435064/what-alan-kay-thinks-about-the-iphone-and-technology-now), “Because people don't understand what computing is about, they think they have it in the iPhone, and that illusion is as bad as the illusion that 'Guitar Hero' is the same as a real guitar.”
+今天大多数人不知道命令行是什么，更不知道为什么要费心使用它。
+正如计算机先驱 Alan Kay 在 [2017 年的一次采访](https://www.fastcompany.com/40435064/what-alan-kay-thinks-about-the-iphone-and-technology-now)中所说："因为人们不理解计算是什么，他们以为 iPhone 就是计算的全部，这种错觉就像以为《吉他英雄》和真正的吉他是一回事一样糟糕。"
 
-Kay’s “real guitar” isn’t the CLI—not exactly.
-He was talking about ways of programming computers that offer the power of the CLI and that transcend writing software in text files.
-There is a belief among Kay’s disciples that we need to break out of a text-based local maximum that we’ve been living in for decades.
+Kay 所说的"真正的吉他"并不完全是指 CLI。
+他谈的是编程计算机的方式，这些方式提供了 CLI 的能力，并超越了在文本文件中编写软件的范畴。
+Kay 的追随者们相信，我们需要突破几十年来一直生活其中的基于文本的局部最优。
 
-It’s exciting to imagine a future where we program computers very differently.
-Even today, spreadsheets are by far the most popular programming language, and the no-code movement is taking off quickly as it attempts to replace some of the intense demand for talented programmers.
+想象一个我们以完全不同方式编程计算机的未来是令人兴奋的。
+即使在今天，电子表格是迄今为止最流行的编程语言，而无代码运动也在快速兴起，试图取代对优秀程序员的部分强烈需求。
 
-Yet with its creaky, decades-old constraints and inexplicable quirks, the command line is still the most _versatile_ corner of the computer.
-It lets you pull back the curtain, see what’s really going on, and creatively interact with the machine at a level of sophistication and depth that GUIs cannot afford.
-It’s available on almost any laptop, for anyone who wants to learn it.
-It can be used interactively, or it can be automated.
-And, it doesn’t change as fast as other parts of the system.
-There is creative value in its stability.
+然而，尽管命令行有着几十年的陈旧约束和莫名其妙的怪癖，它仍然是计算机中最_通用_的角落。
+它让你能够揭开帷幕，看到真正发生的事情，并以 GUI 无法提供的复杂度和深度与机器进行创造性的交互。
+它几乎在任何笔记本电脑上都可用，任何想学习的人都能使用。
+它可以交互式使用，也可以自动化。
+而且，它不像系统的其他部分那样变化迅速。
+它的稳定性具有创造性价值。
 
-So, while we still have it, we should try to maximize its utility and accessibility.
+所以，既然我们还拥有它，我们就应该努力最大化它的实用性和可访问性。
 
-A lot has changed about how we program computers since those early days.
-The command line of the past was _machine-first_: little more than a REPL on top of a scripting platform.
-But as general-purpose interpreted languages have flourished, the role of the shell script has shrunk.
-Today's command line is _human-first_: a text-based UI that affords access to all kinds of tools, systems and platforms.
-In the past, the editor was inside the terminal—today, the terminal is just as often a feature of the editor.
-And there’s been a proliferation of `git`-like multi-tool commands.
-Commands within commands, and high-level commands that perform entire workflows rather than atomic functions.
+自那些早期以来，我们编程计算机的方式发生了很大变化。
+过去的命令行是_机器优先_的：不过是脚本平台之上的一个 REPL。
+但随着通用解释型语言的蓬勃发展，shell 脚本的角色已经缩小。
+今天的命令行是_人类优先_的：一个基于文本的用户界面，提供对各种工具、系统和平台的访问。
+过去，编辑器在终端内部——今天，终端同样经常是编辑器的一个功能。
+而且出现了大量类似 `git` 的多功能命令。
+命令中嵌套命令，以及执行完整工作流而非原子功能的高级命令。
 
-Inspired by traditional UNIX philosophy, driven by an interest in encouraging a more delightful and accessible CLI environment, and guided by our experiences as programmers, we decided it was time to revisit the best practices and design principles for building command-line programs.
+受传统 UNIX 哲学的启发，出于对鼓励更令人愉悦和更易访问的 CLI 环境的兴趣，并以我们作为程序员的经验为指导，我们决定是时候重新审视构建命令行程序的最佳实践和设计原则了。
 
-Long live the command line!
+命令行万岁！
 
-## Introduction {#introduction}
+## 简介 {#introduction}
 
-This document covers both high-level design philosophy, and concrete guidelines.
-It’s heavier on the guidelines because our philosophy as practitioners is not to philosophize too much.
-We believe in learning by example, so we’ve provided plenty of those.
+本文档涵盖高层设计哲学和具体指南两方面。
+指南部分篇幅更多，因为作为实践者，我们的哲学就是不要过度哲学化。
+我们相信通过示例学习，所以提供了大量例子。
 
-This guide doesn’t cover full-screen terminal programs like emacs and vim.
-Full-screen programs are niche projects—very few of us will ever be in the position to design one.
+本指南不涉及像 emacs 和 vim 这样的全屏终端程序。
+全屏程序是小众项目——我们中很少有人会处于需要设计此类程序的位置。
 
-This guide is also agnostic about programming languages and tooling in general.
+本指南对编程语言和工具保持中立。
 
-Who is this guide for?
-- If you are creating a CLI program and you are looking for principles and concrete best practices for its UI design, this guide is for you.
-- If you are a professional “CLI UI designer,” that’s amazing—we’d love to learn from you.
-- If you’d like to avoid obvious missteps of the variety that go against 40 years of CLI design conventions, this guide is for you.
-- If you want to delight people with your program’s good design and helpful help, this guide is definitely for you.
-- If you are creating a GUI program, this guide is not for you—though you may learn some GUI anti-patterns if you decide to read it anyway.
-- If you are designing an immersive, full-screen CLI port of Minecraft, this guide isn’t for you.
-  (But we can’t wait to see it!)
+本指南适合谁？
+- 如果你正在创建一个 CLI 程序，并且正在寻找其 UI 设计的原则和具体最佳实践，本指南适合你。
+- 如果你是一名专业的"CLI UI 设计师"，那太棒了——我们很想向你学习。
+- 如果你想避免那些违背 40 年 CLI 设计惯例的明显失误，本指南适合你。
+- 如果你想用程序的良好设计和有帮助的帮助信息来取悦用户，本指南绝对适合你。
+- 如果你正在创建 GUI 程序，本指南不适合你——尽管如果你决定阅读它，你可能会学到一些 GUI 反模式。
+- 如果你正在设计一个沉浸式的、全屏的 CLI 版 Minecraft，本指南不适合你。
+  （但我们迫不及待想看到它！）
 
-## Philosophy {#philosophy}
+## 设计哲学 {#philosophy}
 
-These are what we consider to be the fundamental principles of good CLI design.
+以下是我们认为良好 CLI 设计的基本原则。
 
-### Human-first design {#human-first-design}
+### 人类优先设计 {#human-first-design}
 
-Traditionally, UNIX commands were written under the assumption they were going to be used primarily by other programs.
-They had more in common with functions in a programming language than with graphical applications.
+传统上，UNIX 命令是在假设它们主要被其他程序使用的前提下编写的。
+它们与编程语言中的函数比与图形应用程序有更多共同点。
 
-Today, even though many CLI programs are used primarily (or even exclusively) by humans, a lot of their interaction design still carries the baggage of the past.
-It’s time to shed some of this baggage: if a command is going to be used primarily by humans, it should be designed for humans first.
+今天，即使许多 CLI 程序主要（甚至完全）由人类使用，它们的交互设计仍然承载着过去的包袱。
+是时候甩掉这些包袱了：如果一个命令主要由人类使用，它就应该首先为人类设计。
 
-### Simple parts that work&nbsp;together {#simple-parts-that-work-together}
+### 简单的部件协同工作 {#simple-parts-that-work-together}
 
-A core tenet of [the original UNIX philosophy](https://en.wikipedia.org/wiki/Unix_philosophy) is the idea that small, simple programs with clean interfaces can be combined to build larger systems.
-Rather than stuff more and more features into those programs, you make programs that are modular enough to be recombined as needed.
+[原始 UNIX 哲学](https://en.wikipedia.org/wiki/Unix_philosophy)的核心原则是：具有清晰接口的小型、简单程序可以组合起来构建更大的系统。
+与其在这些程序中塞入越来越多的功能，不如让程序足够模块化，以便根据需要重新组合。
 
-In the old days, pipes and shell scripts played a crucial role in the process of composing programs together.
-Their role might have diminished with the rise of general-purpose interpreted languages, but they certainly haven’t gone away.
-What’s more, large-scale automation—in the form of CI/CD, orchestration and configuration management—has flourished.
-Making programs composable is just as important as ever.
+在过去，管道和 shell 脚本在程序组合过程中扮演着关键角色。
+它们的角色可能随着通用解释型语言的兴起而减弱，但它们肯定没有消失。
+更重要的是，大规模自动化——以 CI/CD、编排和配置管理的形式——已经蓬勃发展。
+使程序可组合与以往一样重要。
 
-Fortunately, the long-established conventions of the UNIX environment, designed for this exact purpose, still help us today.
-Standard in/out/err, signals, exit codes and other mechanisms ensure that different programs click together nicely.
-Plain, line-based text is easy to pipe between commands.
-JSON, a much more recent invention, affords us more structure when we need it, and lets us more easily integrate command-line tools with the web.
+幸运的是，UNIX 环境中长期建立的惯例，正是为此目的而设计的，今天仍然帮助着我们。
+标准输入/输出/错误、信号、退出码和其他机制确保不同程序能够很好地协作。
+纯文本、基于行的文本很容易在命令之间管道传输。
+JSON，一个更近期的发明，在我们需要时提供了更多结构，让我们更容易将命令行工具与 Web 集成。
 
-Whatever software you’re building, you can be absolutely certain that people will use it in ways you didn’t anticipate.
-Your software _will_ become a part in a larger system—your only choice is over whether it will be a well-behaved part.
+无论你构建什么软件，你都可以绝对确定人们会以你没有预料到的方式使用它。
+你的软件_将_成为更大系统的一部分——你唯一的选择是它是否会成为一个行为良好的部件。
 
-Most importantly, designing for composability does not need to be at odds with designing for humans first.
-Much of the advice in this document is about how to achieve both.
+最重要的是，为可组合性设计不需要与人类优先设计相矛盾。
+本文档中的许多建议都是关于如何同时实现这两者的。
 
-### Consistency across programs {#consistency-across-programs}
+### 跨程序的一致性 {#consistency-across-programs}
 
-The terminal’s conventions are hardwired into our fingers.
-We had to pay an upfront cost by learning about command line syntax, flags, environment variables and so on, but it pays off in long-term efficiency… as long as programs are consistent.
+终端的惯例已经刻入我们的手指。
+我们必须通过学习命令行语法、标志、环境变量等来支付前期成本，但这在长期效率上得到了回报……只要程序是一致的。
 
-Where possible, a CLI should follow patterns that already exist.
-That’s what makes CLIs intuitive and guessable; that’s what makes users efficient.
+在可能的情况下，CLI 应该遵循已经存在的模式。
+这就是让 CLI 直观和可猜测的原因；这就是让用户高效的原因。
 
-That being said, sometimes consistency conflicts with ease of use.
-For example, many long-established UNIX commands don't output much information by default, which can cause confusion or worry for people less familiar with the command line.
+话虽如此，有时一致性与易用性冲突。
+例如，许多长期存在的 UNIX 命令默认不输出太多信息，这可能会让不太熟悉命令行的人感到困惑或担忧。
 
-When following convention would compromise a program’s usability, it might be time to break with it—but such a decision should be made with care.
+当遵循惯例会损害程序的可用性时，可能是时候打破它了——但这样的决定应该谨慎做出。
 
-### Saying (just) enough {#saying-just-enough}
+### 说得恰到好处 {#saying-just-enough}
 
-The terminal is a world of pure information.
-You could make an argument that information is the interface—and that, just like with any interface, there’s often too much or too little of it.
+终端是一个纯信息的世界。
+你可以说信息就是界面——而且，就像任何界面一样，信息往往太多或太少。
 
-A command is saying too little when it hangs for several minutes and the user starts to wonder if it’s broken.
-A command is saying too much when it dumps pages and pages of debugging output, drowning what’s truly important in an ocean of loose detritus.
-The end result is the same: a lack of clarity, leaving the user confused and irritated.
+当一个命令挂起几分钟而用户开始怀疑它是否坏了时，命令就是说得太少了。
+当一个命令倾倒出页面又页面的调试输出，将真正重要的东西淹没在一片松散的碎屑海洋中时，命令就是说得太多了。
+最终结果是一样的：缺乏清晰度，让用户困惑和恼火。
 
-It can be very difficult to get this balance right, but it’s absolutely crucial if software is to empower and serve its users.
+要达到这种平衡可能非常困难，但如果软件要赋能并服务其用户，这绝对是至关重要的。
 
-### Ease of discovery {#ease-of-discovery}
+### 易于发现 {#ease-of-discovery}
 
-When it comes to making functionality discoverable, GUIs have the upper hand.
-Everything you can do is laid out in front of you on the screen, so you can find what you need without having to learn anything, and perhaps even discover things you didn’t know were possible.
+在让功能可发现方面，GUI 占据优势。
+你能做的一切都摆在屏幕前，所以你不需要学习任何东西就能找到你需要的，甚至可能发现你不知道可以做的事情。
 
-It is assumed that command-line interfaces are the opposite of this—that you have to remember how to do everything.
-The original [Macintosh Human Interface Guidelines](https://archive.org/details/applehumaninterf00appl), published in 1987, recommend “See-and-point (instead of remember-and-type),” as if you could only choose one or the other.
+人们假设命令行界面与此相反——你必须记住如何做一切事情。
+1987 年发布的原版 [Macintosh Human Interface Guidelines](https://archive.org/details/applehumaninterf00appl) 推荐"看和指（而不是记住和输入）"，好像你只能选择其中之一。
 
-These things needn’t be mutually exclusive.
-The efficiency of using the command-line comes from remembering commands, but there’s no reason the commands can’t help you learn and remember.
+这些事情不必相互排斥。
+使用命令行的效率来自于记住命令，但没有理由命令不能帮助你学习和记忆。
 
-Discoverable CLIs have comprehensive help texts, provide lots of examples, suggest what command to run next, suggest what to do when there is an error.
-There are lots of ideas that can be stolen from GUIs to make CLIs easier to learn and use, even for power users.
+可发现的 CLI 有完整的帮助文本，提供大量示例，建议接下来运行什么命令，建议出错时该怎么做。
+有很多想法可以从 GUI 中借鉴，使 CLI 更容易学习和使用，即使对于高级用户也是如此。
 
-_Citation: The Design of Everyday Things (Don Norman), Macintosh Human Interface Guidelines_
+_引用：The Design of Everyday Things (Don Norman)，Macintosh Human Interface Guidelines_
 
-### Conversation as the&nbsp;norm {#conversation-as-the-norm}
+### 对话是常态 {#conversation-as-the-norm}
 
-GUI design, particularly in its early days, made heavy use of _metaphor_: desktops, files, folders, recycle bins.
-It made a lot of sense, because computers were still trying to bootstrap themselves into legitimacy.
-The ease of implementation of metaphors was one of the huge advantages GUIs wielded over CLIs.
-Ironically, though, the CLI has embodied an accidental metaphor all along: it’s a conversation.
+GUI 设计，尤其在早期，大量使用_隐喻_：桌面、文件、文件夹、回收站。
+这很有意义，因为计算机仍在试图引导自己进入合法性。
+隐喻的实现便利性是 GUI 相对于 CLI 的巨大优势之一。
+然而，讽刺的是，CLI 一直体现着一个意外的隐喻：它是一场对话。
 
-Beyond the most utterly simple commands, running a program usually involves more than one invocation.
-Usually, this is because it’s hard to get it right the first time: the user types a command, gets an error, changes the command, gets a different error, and so on, until it works.
-This mode of learning through repeated failure is like a conversation the user is having with the program.
+除了最简单的命令，运行一个程序通常涉及不止一次调用。
+通常，这是因为很难第一次就做对：用户输入一个命令，得到一个错误，修改命令，得到一个不同的错误，如此反复，直到成功。
+这种通过反复失败学习的模式就像用户与程序之间的对话。
 
-Trial-and-error isn’t the only type of conversational interaction, though.
-There are others:
+然而，试错并不是唯一的对话式交互类型。
+还有其他类型：
 
-- Running one command to set up a tool and then learning what commands to run to actually start using it.
-- Running several commands to set up an operation, and then a final command to run it (e.g. multiple `git add`s, followed by a `git commit`).
-- Exploring a system—for example, doing a lot of `cd` and `ls` to get a sense of a directory structure, or `git log` and `git show` to explore the history of a file.
-- Doing a dry-run of a complex operation before running it for real.
+- 运行一个命令来设置工具，然后学习运行哪些命令来实际开始使用它。
+- 运行多个命令来设置一个操作，然后运行最后一个命令来执行它（例如，多个 `git add`，然后是 `git commit`）。
+- 探索一个系统——例如，做大量的 `cd` 和 `ls` 来了解目录结构，或者用 `git log` 和 `git show` 来探索文件的历史。
+- 在实际运行之前对复杂操作进行预演。
 
-Acknowledging the conversational nature of command-line interaction means you can bring relevant techniques to bear on its design.
-You can suggest possible corrections when user input is invalid, you can make the intermediate state clear when the user is going through a multi-step process, you can confirm for them that everything looks good before they do something scary.
+承认命令行交互的对话性质意味着你可以将相关技术应用于其设计。
+当用户输入无效时，你可以建议可能的更正，当用户正在进行多步骤过程时，你可以让中间状态清晰可见，在他们做一些可怕的事情之前，你可以为他们确认一切看起来都很好。
 
-The user is conversing with your software, whether you intended it or not.
-At worst, it’s a hostile conversation which makes them feel stupid and resentful.
-At best, it’s a pleasant exchange that speeds them on their way with newfound knowledge and a feeling of achievement.
+无论你是否有意为之，用户都在与你的软件对话。
+在最坏的情况下，这是一场敌对的对话，让他们感到愚蠢和怨恨。
+在最好的情况下，这是一次愉快的交流，让他们带着新获得的知识和成就感快速前进。
 
-_Further reading: [The Anti-Mac User Interface (Don Gentner and Jakob Nielsen)](https://www.nngroup.com/articles/anti-mac-interface/)_
+_延伸阅读：[The Anti-Mac User Interface (Don Gentner and Jakob Nielsen)](https://www.nngroup.com/articles/anti-mac-interface/)_
 
-### Robustness {#robustness-principle}
+### 健壮性 {#robustness-principle}
 
-Robustness is both an objective and a subjective property.
-Software should _be_ robust, of course: unexpected input should be handled gracefully, operations should be idempotent where possible, and so on.
-But it should also _feel_ robust.
+健壮性既是客观属性也是主观属性。
+软件当然应该_是_健壮的：意外输入应该被优雅地处理，操作应该尽可能是幂等的，等等。
+但它也应该_感觉_健壮。
 
-You want your software to feel like it isn’t going to fall apart.
-You want it to feel immediate and responsive, as if it were a big mechanical machine, not a flimsy plastic “soft switch.”
+你希望你的软件感觉不会散架。
+你希望它感觉即时和响应，就好像它是一台大型机械机器，而不是一个脆弱的塑料"软开关"。
 
-Subjective robustness requires attention to detail and thinking hard about what can go wrong.
-It’s lots of little things: keeping the user informed about what’s happening, explaining what common errors mean, not printing scary-looking stack traces.
+主观的健壮性需要关注细节，并认真思考什么可能出错。
+它是很多小事情的集合：让用户了解正在发生什么，解释常见错误的含义，不打印看起来可怕的堆栈跟踪。
 
-As a general rule, robustness can also come from keeping it simple.
-Lots of special cases and complex code tend to make a program fragile.
+作为一般规则，健壮性也可以来自保持简单。
+大量的特殊情况和复杂代码往往使程序变得脆弱。
 
-### Empathy {#empathy}
+### 同理心 {#empathy}
 
-Command-line tools are a programmer’s creative toolkit, so they should be enjoyable to use.
-This doesn’t mean turning them into a video game, or using lots of emoji (though there’s nothing inherently wrong with emoji 😉).
-It means giving the user the feeling that you are on their side, that you want them to succeed, that you have thought carefully about their problems and how to solve them.
+命令行工具是程序员的创意工具包，所以它们应该用起来很愉快。
+这并不意味着把它们变成视频游戏，或使用大量 emoji（尽管 emoji 本身没有什么问题 😉）。
+它意味着给用户一种感觉：你站在他们这边，你希望他们成功，你已经仔细考虑过他们的问题以及如何解决它们。
 
-There’s no list of actions you can take that will ensure they feel this way, although we hope that following our advice will take you some of the way there.
-Delighting the user means _exceeding their expectations_ at every turn, and that starts with empathy.
+没有一份可以保证他们有这种感觉的行动清单，尽管我们希望遵循我们的建议会让你走完一部分路程。
+取悦用户意味着在每一个转折点都_超越他们的期望_，而这始于同理心。
 
-### Chaos {#chaos}
+### 混沌 {#chaos}
 
-The world of the terminal is a mess.
-Inconsistencies are everywhere, slowing us down and making us second-guess ourselves.
+终端的世界是一团混乱。
+不一致性无处不在，减慢我们的速度，让我们质疑自己。
 
-Yet it’s undeniable that this chaos has been a source of power.
-The terminal, like the UNIX-descended computing environment in general, places very few constraints on what you can build.
-In that space, all manner of invention has bloomed.
+然而不可否认的是，这种混沌一直是力量的源泉。
+终端，像一般的 UNIX 派生计算环境一样，对你能构建什么施加的约束很少。
+在这个空间里，各种各样的发明蓬勃发展。
 
-It’s ironic that this document implores you to follow existing patterns, right alongside advice that contradicts decades of command-line tradition.
-We’re just as guilty of breaking the rules as anyone.
+讽刺的是，本文档恳请你遵循现有模式，同时又给出了与数十年命令行传统相矛盾的建议。
+我们和任何人一样，都在打破规则。
 
-The time might come when you, too, have to break the rules.
-Do so with intention and clarity of purpose.
+你也可能有一天不得不打破规则。
+要有意图和目的清晰地这样做。
 
-> “Abandon a standard when it is demonstrably harmful to productivity or user satisfaction.” — Jef Raskin, [The Humane Interface](https://en.wikipedia.org/wiki/The_Humane_Interface)
+> "当一个标准明显损害生产力或用户满意度时，就放弃它。" — Jef Raskin，[The Humane Interface](https://en.wikipedia.org/wiki/The_Humane_Interface)
 
-## Guidelines {#guidelines}
+## 指南 {#guidelines}
 
-This is a collection of specific things you can do to make your command-line program better.
+这是一组可以让你的命令行程序变得更好的具体事项。
 
-The first section contains the essential things you need to follow.
-Get these wrong, and your program will be either hard to use or a bad CLI citizen.
+第一部分包含你需要遵循的基本事项。
+如果这些做错了，你的程序要么难以使用，要么是一个糟糕的 CLI 公民。
 
-The rest are nice-to-haves.
-If you have the time and energy to add these things, your program will be a lot better than the average program.
+其余的是锦上添花。
+如果你有时间和精力添加这些东西，你的程序将比一般程序好得多。
 
-The idea is that, if you don’t want to think too hard about the design of your program, you don’t have to: just follow these rules and your program will probably be good.
-On the other hand, if you’ve thought about it and determined that a rule is wrong for your program, that’s fine.
-(There’s no central authority that will reject your program for not following arbitrary rules.)
+理念是，如果你不想对程序的设计思考太多，你不必：只需遵循这些规则，你的程序可能会很好。
+另一方面，如果你已经思考过并确定某条规则对你的程序不适用，那也没问题。
+（没有什么中央机构会因为你没有遵循任意规则而拒绝你的程序。）
 
-Also—these rules aren’t written in stone.
-If you disagree with a general rule for good reason, we hope you’ll [propose a change](https://github.com/cli-guidelines/cli-guidelines).
+另外——这些规则并非一成不变。
+如果你有充分理由不同意某条一般规则，我们希望你能[提出修改](https://github.com/cli-guidelines/cli-guidelines)。
 
-### The Basics {#the-basics}
+### 基础 {#the-basics}
 
-There are a few basic rules you need to follow.
-Get these wrong, and your program will be either very hard to use, or flat-out broken.
+有一些基本规则你需要遵循。
+如果这些做错了，你的程序要么非常难以使用，要么完全损坏。
 
-**Use a command-line argument parsing library where you can.**
-Either your language’s built-in one, or a good third-party one.
-They will normally handle arguments, flag parsing, help text, and even spelling suggestions in a sensible way.
+**尽可能使用命令行参数解析库。**
+使用你的语言内置的，或一个好的第三方库。
+它们通常会以合理的方式处理参数、标志解析、帮助文本，甚至拼写建议。
 
-Here are some that we like:
-* Multi-platform: [docopt](http://docopt.org)
-* Bash: [argbash](https://argbash.dev)
-* Go: [Cobra](https://github.com/spf13/cobra), [cli](https://github.com/urfave/cli)
-* Haskell: [optparse-applicative](https://hackage.haskell.org/package/optparse-applicative)
-* Java: [picocli](https://picocli.info/)
-* Julia: [ArgParse.jl](https://github.com/carlobaldassi/ArgParse.jl), [Comonicon.jl](https://github.com/comonicon/Comonicon.jl)
-* Kotlin: [clikt](https://ajalt.github.io/clikt/)
-* Node: [oclif](https://oclif.io/)
-* Deno: [parseArgs](https://jsr.io/@std/cli/doc/parse-args/~/parseArgs)
-* Perl: [Getopt::Long](https://metacpan.org/pod/Getopt::Long)
-* PHP: [console](https://github.com/symfony/console), [CLImate](https://climate.thephpleague.com)
-* Python: [Argparse](https://docs.python.org/3/library/argparse.html), [Click](https://click.palletsprojects.com/), [Typer](https://github.com/tiangolo/typer)
-* Ruby: [TTY](https://ttytoolkit.org/)
-* Rust: [clap](https://docs.rs/clap)
-* Swift: [swift-argument-parser](https://github.com/apple/swift-argument-parser)
+以下是一些我们喜欢的：
+* 多平台：[docopt](http://docopt.org)
+* Bash：[argbash](https://argbash.dev)
+* Go：[Cobra](https://github.com/spf13/cobra)、[cli](https://github.com/urfave/cli)
+* Haskell：[optparse-applicative](https://hackage.haskell.org/package/optparse-applicative)
+* Java：[picocli](https://picocli.info/)
+* Julia：[ArgParse.jl](https://github.com/carlobaldassi/ArgParse.jl)、[Comonicon.jl](https://github.com/comonicon/Comonicon.jl)
+* Kotlin：[clikt](https://ajalt.github.io/clikt/)
+* Node：[oclif](https://oclif.io/)
+* Deno：[parseArgs](https://jsr.io/@std/cli/doc/parse-args/~/parseArgs)
+* Perl：[Getopt::Long](https://metacpan.org/pod/Getopt::Long)
+* PHP：[console](https://github.com/symfony/console)、[CLImate](https://climate.thephpleague.com)
+* Python：[Argparse](https://docs.python.org/3/library/argparse.html)、[Click](https://click.palletsprojects.com/)、[Typer](https://github.com/tiangolo/typer)
+* Ruby：[TTY](https://ttytoolkit.org/)
+* Rust：[clap](https://docs.rs/clap)
+* Swift：[swift-argument-parser](https://github.com/apple/swift-argument-parser)
 
-**Return zero exit code on success, non-zero on failure.**
-Exit codes are how scripts determine whether a program succeeded or failed, so you should report this correctly.
-Map the non-zero exit codes to the most important failure modes.
+**成功时返回零退出码，失败时返回非零。**
+退出码是脚本判断程序成功还是失败的方式，所以你应该正确报告这一点。
+将非零退出码映射到最重要的失败模式。
 
-**Send output to `stdout`.**
-The primary output for your command should go to `stdout`.
-Anything that is machine readable should also go to `stdout`—this is where piping sends things by default.
+**将输出发送到 `stdout`。**
+命令的主要输出应该发送到 `stdout`。
+任何机器可读的内容也应该发送到 `stdout`——这是管道默认发送内容的地方。
 
-**Send messaging to `stderr`.**
-Log messages, errors, and so on should all be sent to `stderr`.
-This means that when commands are piped together, these messages are displayed to the user and not fed into the next command.
+**将消息发送到 `stderr`。**
+日志消息、错误等都应该发送到 `stderr`。
+这意味着当命令被管道连接在一起时，这些消息会显示给用户，而不是被输入到下一个命令。
 
-### Help {#help}
+### 帮助 {#help}
 
-**Display extensive help text when asked.**
-Display help when passed `-h` or `--help` flags.
-This also applies to subcommands which might have their own help text.
+**被请求时显示详尽的帮助文本。**
+当传入 `-h` 或 `--help` 标志时显示帮助。
+这也适用于可能有自己帮助文本的子命令。
 
-**Display concise help text by default.**
-When `myapp` or `myapp subcommand` requires arguments to function,
-and is run with no arguments,
-display concise help text.
+**默认显示简洁的帮助文本。**
+当 `myapp` 或 `myapp subcommand` 需要参数才能运行，但运行时没有参数，显示简洁的帮助文本。
 
-You can ignore this guideline
-if your program is interactive by default (e.g. `npm init`).
+如果你的程序默认是交互式的（例如 `npm init`），你可以忽略这条指南。
 
-The concise help text should only include:
+简洁的帮助文本应该只包括：
 
-- A description of what your program does.
-- One or two example invocations.
-- Descriptions of flags, unless there are lots of them.
-- An instruction to pass the `--help` flag for more information.
+- 程序做什么的描述。
+- 一两个调用示例。
+- 标志的描述，除非标志很多。
+- 传递 `--help` 标志以获取更多信息的说明。
 
-`jq` does this well.
-When you type `jq`, it displays an introductory description and an example, then prompts you to pass `jq --help` for the full listing of flags:
+`jq` 做得很好。
+当你输入 `jq` 时，它显示介绍性描述和示例，然后提示你传递 `jq --help` 以获取完整的标志列表：
 
 ```
 $ jq
@@ -340,8 +337,8 @@ Example:
 For a listing of options, use jq --help.
 ```
 
-**Show full help when `-h` and `--help` is passed.**
-All of these should show help:
+**当传入 `-h` 和 `--help` 时显示完整帮助。**
+以下所有都应该显示帮助：
 
 ```
 $ myapp
@@ -349,10 +346,10 @@ $ myapp --help
 $ myapp -h
 ```
 
-Ignore any other flags and arguments that are passed—you should be able to add `-h` to the end of anything and it should show help.
-Don’t overload `-h`.
+忽略传入的任何其他标志和参数——你应该能够在任何命令末尾添加 `-h`，它就会显示帮助。
+不要重载 `-h`。
 
-If your program is `git`-like, the following should also offer help:
+如果你的程序是类似 `git` 的，以下也应该提供帮助：
 
 ```
 $ myapp help
@@ -361,28 +358,28 @@ $ myapp subcommand --help
 $ myapp subcommand -h
 ```
 
-**Provide a support path for feedback and issues.**
-A website or GitHub link in the top-level help text is common.
+**为反馈和问题提供支持路径。**
+在顶级帮助文本中放一个网站或 GitHub 链接是常见做法。
 
-**In help text, link to the web version of the documentation.**
-If you have a specific page or anchor for a subcommand, link directly to that.
-This is particularly useful if there is more detailed documentation on the web, or further reading that might explain the behavior of something.
+**在帮助文本中链接到文档的网页版本。**
+如果你对某个子命令有特定的页面或锚点，直接链接到那里。
+这在网页上有更详细的文档，或者有可能解释某些行为的延伸阅读时特别有用。
 
-**Lead with examples.**
-Users tend to use examples over other forms of documentation, so show them first in the help page, particularly the common complex uses.
-If it helps explain what it’s doing and it isn’t too long, show the actual output too.
+**以示例开头。**
+用户倾向于使用示例而不是其他形式的文档，所以在帮助页面中首先展示它们，特别是常见的复杂用法。
+如果它有助于解释正在做什么并且不太长，也展示实际输出。
 
-You can tell a story with a series of examples, building your way toward complex uses.
+你可以用一系列示例讲述一个故事，逐步构建到复杂的用法。
 <!-- TK example? -->
 
-**If you’ve got loads of examples, put them somewhere else,** in a cheat sheet command or a web page.
-It’s useful to have exhaustive, advanced examples, but you don’t want to make your help text really long.
+**如果你有大量示例，把它们放在别处，**比如一个速查表命令或网页。
+有详尽的、高级的示例是有用的，但你不想让帮助文本太长。
 
-For more complex use cases, e.g. when integrating with another tool, it might be appropriate to write a fully-fledged tutorial.
+对于更复杂的用例，例如与另一个工具集成，编写一个完整的教程可能是合适的。
 
-**Display the most common flags and commands at the start of the help text.**
-It’s fine to have lots of flags, but if you’ve got some really common ones, display them first.
-For example, the Git command displays the commands for getting started and the most commonly used subcommands first:
+**在帮助文本开头显示最常用的标志和命令。**
+有很多标志是可以的，但如果你有一些真正常用的，首先显示它们。
+例如，Git 命令首先显示入门命令和最常用的子命令：
 
 ```
 $ git
@@ -413,9 +410,9 @@ examine the history and state (see also: git help revisions)
 …
 ```
 
-**Use formatting in your help text.**
-Bold headings make it much easier to scan.
-But, try to do it in a terminal-independent way so that your users aren't staring down a wall of escape characters.
+**在帮助文本中使用格式化。**
+粗体标题使扫描变得更容易。
+但是，尽量以终端无关的方式做到这一点，这样你的用户就不会盯着一堵转义字符的墙。
 
 <pre>
 <code>
@@ -458,13 +455,13 @@ list your apps
 </code>
 </pre>
 
-Note: When `heroku apps --help` is piped through a pager, the command emits no escape characters.
+注意：当 `heroku apps --help` 通过分页器管道传输时，命令不输出转义字符。
 
-**If the user did something wrong and you can guess what they meant, suggest it.**
-For example, `brew update jq` tells you that you should run `brew upgrade jq`.
+**如果用户做错了什么，并且你可以猜到他们的意思，就建议它。**
+例如，`brew update jq` 会告诉你应该运行 `brew upgrade jq`。
 
-You can ask if they want to run the suggested command, but don’t force it on them.
-For example:
+你可以询问他们是否想运行建议的命令，但不要强迫他们。
+例如：
 
 ```
 $ heroku pss
@@ -472,41 +469,41 @@ $ heroku pss
 Did you mean ps? [y/n]:
 ```
 
-Rather than suggesting the corrected syntax, you might be tempted to just run it for them, as if they’d typed it right in the first place.
-Sometimes this is the right thing to do, but not always.
+与其建议正确的语法，你可能会想直接为他们运行，就好像他们一开始就输入正确一样。
+有时这是正确的做法，但不总是。
 
-Firstly, invalid input doesn’t necessarily imply a simple typo—it can often mean the user has made a logical mistake, or misused a shell variable.
-Assuming what they meant can be dangerous, especially if the resulting action modifies state.
+首先，无效输入不一定意味着简单的打字错误——它通常可能意味着用户犯了逻辑错误，或误用了 shell 变量。
+假设他们的意思可能是危险的，特别是如果结果操作会修改状态。
 
-Secondly, be aware that if you change what the user typed, they won’t learn the correct syntax.
-In effect, you’re ruling that the way they typed it is valid and correct, and you’re committing to supporting that indefinitely.
-Be intentional in making that decision, and document both syntaxes.
+其次，要意识到如果你改变了用户输入的内容，他们就不会学到正确的语法。
+实际上，你是在裁定他们输入的方式是有效和正确的，你在承诺无限期地支持它。
+在做出这个决定时要有意图，并记录两种语法。
 
-_Further reading: [“Do What I Mean”](http://www.catb.org/~esr/jargon/html/D/DWIM.html)_
+_延伸阅读：["Do What I Mean"](http://www.catb.org/~esr/jargon/html/D/DWIM.html)_
 
-**If your command is expecting to have something piped to it and `stdin` is an interactive terminal, display help immediately and quit.**
-This means it doesn’t just hang, like `cat`.
-Alternatively, you could print a log message to `stderr`.
+**如果你的命令期望有东西管道输入，而 `stdin` 是交互式终端，立即显示帮助并退出。**
+这意味着它不会像 `cat` 那样只是挂起。
+或者，你可以向 `stderr` 打印一条日志消息。
 
-### Documentation {#documentation}
+### 文档 {#documentation}
 
-The purpose of [help text](#help) is to give a brief, immediate sense of what your tool is, what options are available, and how to perform the most common tasks.
-Documentation, on the other hand, is where you go into full detail.
-It’s where people go to understand what your tool is for, what it _isn’t_ for, how it works and how to do everything they might need to do.
+[帮助文本](#help)的目的是给出你的工具是什么、有哪些选项可用以及如何执行最常见任务的简短、即时的概念。
+另一方面，文档是你详细说明的地方。
+这是人们去了解你的工具是做什么的、_不是_做什么的、它是如何工作的，以及如何做他们可能需要做的一切的地方。
 
-**Provide web-based documentation.**
-People need to be able to search online for your tool’s documentation, and to link other people to specific parts.
-The web is the most inclusive documentation format available.
+**提供基于网页的文档。**
+人们需要能够在线搜索你的工具的文档，并能够将其他人链接到特定部分。
+网页是最具包容性的文档格式。
 
-**Provide terminal-based documentation.**
-Documentation in the terminal has several nice properties: it’s fast to access, it stays in sync with the specific installed version of the tool, and it works without an internet connection.
+**提供基于终端的文档。**
+终端中的文档有几个很好的特性：访问速度快，与工具的特定安装版本保持同步，并且在没有互联网连接的情况下也能工作。
 
-**Consider providing man pages.**
-[man pages](https://en.wikipedia.org/wiki/Man_page), Unix’s original system of documentation, are still in use today, and many users will reflexively check `man mycmd` as a first step when trying to learn about your tool.
-To make them easier to generate, you can use a tool like [ronn](http://rtomayko.github.io/ronn/ronn.1.html) (which can also generate your web docs).
+**考虑提供 man 页面。**
+[man 页面](https://en.wikipedia.org/wiki/Man_page)，Unix 的原始文档系统，今天仍在使用，许多用户在试图了解你的工具时会本能地首先检查 `man mycmd`。
+为了更容易生成它们，你可以使用像 [ronn](http://rtomayko.github.io/ronn/ronn.1.html) 这样的工具（它也可以生成你的网页文档）。
 
-However, not everyone knows about `man`, and it doesn’t run on all platforms, so you should also make sure your terminal docs are accessible via your tool itself.
-For example, `git` and `npm` make their man pages accessible via the `help` subcommand, so `npm help ls` is equivalent to `man npm-ls`.
+然而，不是每个人都知道 `man`，而且它不能在所有平台上运行，所以你还应该确保你的终端文档可以通过工具本身访问。
+例如，`git` 和 `npm` 通过 `help` 子命令使其 man 页面可访问，所以 `npm help ls` 等同于 `man npm-ls`。
 
 ```
 NPM-LS(1)                                                            NPM-LS(1)
@@ -526,51 +523,48 @@ DESCRIPTION
        ...
 ```
 
-### Output {#output}
+### 输出 {#output}
 
-**Human-readable output is paramount.**
-Humans come first, machines second.
-The most simple and straightforward heuristic for whether a particular output stream (`stdout` or `stderr`) is being read by a human is _whether or not it’s a TTY_.
-Whatever language you’re using, it will have a utility or library for doing this (e.g. [Python](https://stackoverflow.com/questions/858623/how-to-recognize-whether-a-script-is-running-on-a-tty), [Node](https://nodejs.org/api/process.html#process_a_note_on_process_i_o), [Go](https://github.com/mattn/go-isatty)).
+**人类可读的输出是最重要的。**
+人类优先，机器其次。
+判断特定输出流（`stdout` 或 `stderr`）是否被人类阅读的最简单、最直接的启发式方法是_它是否是 TTY_。
+无论你使用什么语言，它都会有一个用于此目的的实用程序或库（例如 [Python](https://stackoverflow.com/questions/858623/how-to-recognize-whether-a-script-is-running-on-a-tty)、[Node](https://nodejs.org/api/process.html#process_a_note_on_process_i_o)、[Go](https://github.com/mattn/go-isatty)）。
 
-_Further reading on [what a TTY is](https://unix.stackexchange.com/a/4132)._
+_关于[什么是 TTY](https://unix.stackexchange.com/a/4132) 的延伸阅读。_
 
-**Have machine-readable output where it does not impact usability.**
-Streams of text is the universal interface in UNIX.
-Programs typically output lines of text, and programs typically expect lines of text as input,
-therefore you can compose multiple programs together.
-This is normally done to make it possible to write scripts,
-but it can also help the usability for humans using programs.
-For example, a user should be able to pipe output to `grep` and it should do what they expect.
+**在不影响可用性的情况下提供机器可读的输出。**
+文本流是 UNIX 中的通用接口。
+程序通常输出文本行，程序通常期望文本行作为输入，因此你可以将多个程序组合在一起。这通常是为了使编写脚本成为可能，但它也可以帮助人类使用程序的可用性。
+例如，用户应该能够将输出管道到 `grep`，它应该按照他们期望的方式工作。
 
-> “Expect the output of every program to become the input to another, as yet unknown, program.”
+> "期望每个程序的输出都能成为另一个尚未知的程序的输入。"
 — [Doug McIlroy](http://web.archive.org/web/20220609080931/https://homepage.cs.uri.edu/~thenry/resources/unix_art/ch01s06.html)
 
-**If human-readable output breaks machine-readable output, use `--plain` to display output in plain, tabular text format for integration with tools like `grep` or `awk`.**
-In some cases, you might need to output information in a different way to make it human-readable.
+**如果人类可读的输出破坏了机器可读的输出，使用 `--plain` 以纯表格文本格式显示输出，以便与 `grep` 或 `awk` 等工具集成。**
+在某些情况下，你可能需要以不同的方式输出信息以使其对人类可读。
 <!-- (TK example with and without --plain) -->
-For example, if you are displaying a line-based table, you might choose to split a cell into multiple lines, fitting in more information while keeping it within the width of the screen.
-This breaks the expected behavior of there being one piece of data per line, so you should provide a `--plain` flag for scripts, which disables all such manipulation and outputs one record per line.
+例如，如果你正在显示一个基于行的表格，你可能会选择将一个单元格拆分成多行，在保持在屏幕宽度内的同时容纳更多信息。
+这打破了每行一条数据的预期行为，所以你应该为脚本提供一个 `--plain` 标志，它禁用所有此类操作并每行输出一条记录。
 
-**Display output as formatted JSON if `--json` is passed.**
-JSON allows for more structure than plain text, so it makes it much easier to output and handle complex data structures.
-[`jq`](https://stedolan.github.io/jq/) is a common tool for working with JSON on the command-line, and there is now a [whole ecosystem of tools](https://ilya-sher.org/2018/04/10/list-of-json-tools-for-command-line/) that output and manipulate JSON.
+**如果传入了 `--json`，将输出显示为格式化的 JSON。**
+JSON 允许比纯文本更多的结构，所以它使输出和处理复杂数据结构变得更加容易。
+[`jq`](https://stedolan.github.io/jq/) 是在命令行上处理 JSON 的常用工具，现在有一个[完整的工具生态系统](https://ilya-sher.org/2018/04/10/list-of-json-tools-for-command-line/)输出和操作 JSON。
 
-It is also widely used on the web, so by using JSON as the input and output of programs, you can pipe directly to and from web services using `curl`.
+它也在网页上广泛使用，所以通过使用 JSON 作为程序的输入和输出，你可以使用 `curl` 直接管道到和从 Web 服务。
 
-**Display output on success, but keep it brief.**
-Traditionally, when nothing is wrong, UNIX commands display no output to the user.
-This makes sense when they’re being used in scripts, but can make commands appear to be hanging or broken when used by humans.
-For example, `cp` will not print anything, even if it takes a long time.
+**成功时显示输出，但保持简短。**
+传统上，当一切正常时，UNIX 命令不向用户显示任何输出。
+这在它们被脚本使用时是有意义的，但在被人类使用时可能会使命令看起来像是挂起或损坏了。
+例如，`cp` 不会打印任何东西，即使它需要很长时间。
 
-It’s rare that printing nothing at all is the best default behavior, but it’s usually best to err on the side of less.
+什么都不打印很少是最佳的默认行为，但通常最好是少打印一些。
 
-For instances where you do want no output (for example, when used in shell scripts), to avoid clumsy redirection of `stderr` to `/dev/null`, you can provide a `-q` option to suppress all non-essential output.
+对于你确实希望没有输出的情况（例如，在 shell 脚本中使用时），为了避免笨拙地将 `stderr` 重定向到 `/dev/null`，你可以提供一个 `-q` 选项来抑制所有非必要的输出。
 
-**If you change state, tell the user.**
-When a command changes the state of a system, it’s especially valuable to explain what has just happened, so the user can model the state of the system in their head—particularly if the result doesn’t directly map to what the user requested.
+**如果你改变了状态，告诉用户。**
+当命令改变系统的状态时，解释刚刚发生了什么特别有价值，这样用户可以在脑海中建立系统的状态模型——特别是当结果与用户请求的不直接对应时。
 
-For example, `git push` tells you exactly what it is doing, and what the new state of the remote branch is:
+例如，`git push` 准确地告诉你它在做什么，以及远程分支的新状态：
 
 ```
 $ git push
@@ -585,10 +579,10 @@ To github.com:replicate/replicate.git
  + 6c22c90...a2a5217 bfirsh/fix-delete -> bfirsh/fix-delete
 ```
 
-**Make it easy to see the current state of the system.**
-If your program does a lot of complex state changes and it is not immediately visible in the filesystem, make sure you make this easy to view.
+**使查看系统当前状态变得容易。**
+如果你的程序进行大量复杂的状态变化，并且这些变化在文件系统中不是立即可见的，确保你使这容易查看。
 
-For example, `git status` tells you as much information as possible about the current state of your Git repository, and some hints at how to modify the state:
+例如，`git status` 尽可能多地告诉你关于 Git 仓库当前状态的信息，以及一些如何修改状态的提示：
 
 ```
 $ git status
@@ -603,20 +597,20 @@ Changes not staged for commit:
 no changes added to commit (use "git add" and/or "git commit -a")
 ```
 
-**Suggest commands the user should run.**
-When several commands form a workflow, suggesting to the user commands they can run next helps them learn how to use your program and discover new functionality.
-For example, in the `git status` output above, it suggests commands you can run to modify the state you are viewing.
+**建议用户应该运行的命令。**
+当多个命令形成一个工作流时，向用户建议他们接下来可以运行的命令可以帮助他们学习如何使用你的程序并发现新功能。
+例如，在上面的 `git status` 输出中，它建议了你可以运行来修改你正在查看的状态的命令。
 
-**Actions crossing the boundary of the program’s internal world should usually be explicit.**
-This includes things like:
+**跨越程序内部世界边界的操作通常应该是显式的。**
+这包括：
 
-- Reading or writing files that the user didn’t explicitly pass as arguments (unless those files are storing internal program state, such as a cache).
-- Talking to a remote server, e.g. to download a file.
+- 读取或写入用户没有显式传递为参数的文件（除非这些文件存储内部程序状态，如缓存）。
+- 与远程服务器通信，例如下载文件。
 
-**Increase information density—with ASCII art!**
-For example, `ls` shows permissions in a scannable way.
-When you first see it, you can ignore most of the information.
-Then, as you learn how it works, you pick out more patterns over time.
+**增加信息密度——用 ASCII 艺术！**
+例如，`ls` 以可扫描的方式显示权限。
+当你第一次看到它时，你可以忽略大部分信息。
+然后，随着你学习它的工作原理，你会随着时间的推移捕捉到更多的模式。
 
 ```
 -rw-r--r-- 1 root root     68 Aug 22 23:20 resolv.conf
@@ -630,38 +624,38 @@ drwxr-xr-x 2 root root   4.0K Jul 20 14:57 skel
 -rw-r--r-- 1 root root      0 Jul 20 14:43 subuid
 ```
 
-**Use color with intention.**
-For example, you might want to highlight some text so the user notices it, or use red to indicate an error.
-Don’t overuse it—if everything is a different color, then the color means nothing and only makes it harder to read.
+**有目的地使用颜色。**
+例如，你可能想要高亮一些文本以便用户注意到它，或使用红色表示错误。
+不要过度使用——如果所有东西都是不同的颜色，那么颜色就没有意义，只会使阅读变得更困难。
 
-**Disable color if your program is not in a terminal or the user requested it.**
-These things should disable colors:
+**如果你的程序不在终端中或用户请求，禁用颜色。**
+这些情况应该禁用颜色：
 
-- `stdout` or `stderr` is not an interactive terminal (a TTY).
-  It’s best to individually check—if you’re piping `stdout` to another program, it’s still useful to get colors on `stderr`.
-- The `NO_COLOR` environment variable is set and it is not empty (regardless of its value).
-- The `TERM` environment variable has the value `dumb`.
-- The user passes the option `--no-color`.
-- You may also want to add a `MYAPP_NO_COLOR` environment variable in case users want to disable color specifically for your program.
+- `stdout` 或 `stderr` 不是交互式终端（TTY）。
+  最好单独检查——如果你将 `stdout` 管道到另一个程序，在 `stderr` 上获得颜色仍然是有用的。
+- `NO_COLOR` 环境变量被设置且不为空（无论其值是什么）。
+- `TERM` 环境变量的值为 `dumb`。
+- 用户传入了 `--no-color` 选项。
+- 如果用户想要专门为你的程序禁用颜色，你可能还想添加一个 `MYAPP_NO_COLOR` 环境变量。
 
-_Further reading: [no-color.org](https://no-color.org/), [12 Factor CLI Apps](https://medium.com/@jdxcode/12-factor-cli-apps-dd3c227a0e46)_
+_延伸阅读：[no-color.org](https://no-color.org/)、[12 Factor CLI Apps](https://medium.com/@jdxcode/12-factor-cli-apps-dd3c227a0e46)_
 
-**If `stdout` is not an interactive terminal, don’t display any animations.**
-This will stop progress bars turning into Christmas trees in CI log output.
+**如果 `stdout` 不是交互式终端，不显示任何动画。**
+这将阻止进度条在 CI 日志输出中变成圣诞树。
 
-**Use symbols and emoji where it makes things clearer.**
-Pictures can be better than words if you need to make several things distinct, catch the user’s attention, or just add a bit of character.
-Be careful, though—it can be easy to overdo it and make your program look cluttered or feel like a toy.
+**在能让事情更清晰的地方使用符号和 emoji。**
+如果你需要区分几件事、吸引用户的注意力或只是增加一点个性，图片可能比文字更好。
+但要小心——很容易过度使用，使你的程序看起来杂乱或感觉像玩具。
 
-For example, [yubikey-agent](https://github.com/FiloSottile/yubikey-agent) uses emoji to add structure to the output so it isn’t just a wall of text, and a ❌ to draw your attention to an important piece of information:
+例如，[yubikey-agent](https://github.com/FiloSottile/yubikey-agent) 使用 emoji 为输出添加结构，这样它就不只是一堵文字墙，并用 ❌ 来吸引你对重要信息的注意：
 
 ```shell-session
 $ yubikey-agent -setup
 🔐 The PIN is up to 8 numbers, letters, or symbols. Not just numbers!
 ❌ The key will be lost if the PIN and PUK are locked after 3 incorrect tries.
 
-Choose a new PIN/PUK: 
-Repeat the PIN/PUK: 
+Choose a new PIN/PUK:
+Repeat the PIN/PUK:
 
 🧪 Retriculating splines …
 
@@ -675,170 +669,170 @@ UwlHnUFXgENO3ifPZd8zoSKMxESxxot4tMgvfXjmRp5G3BGrAnonncE7Aj11pn3SSYgEcrrn2sMyLGpV
 💭 Remember: everything breaks, have a backup plan for when this YubiKey does.
 ```
 
-**By default, don’t output information that’s only understandable by the creators of the software.**
-If a piece of output serves only to help you (the developer) understand what your software is doing, it almost certainly shouldn’t be displayed to normal users by default—only in verbose mode.
+**默认情况下，不要输出只有软件创建者才能理解的信息。**
+如果一段输出只是帮助你（开发者）理解你的软件在做什么，它几乎肯定不应该默认显示给普通用户——只在详细模式下显示。
 
-Invite usability feedback from outsiders and people who are new to your project.
-They’ll help you see important issues that you are too close to the code to notice.
+邀请外部人士和项目新手提供可用性反馈。
+他们会帮助你看到你离代码太近而注意不到的重要问题。
 
-**Don’t treat `stderr` like a log file, at least not by default.**
-Don’t print log level labels (`ERR`, `WARN`, etc.) or extraneous contextual information, unless in verbose mode.
+**不要把 `stderr` 当作日志文件，至少不要默认这样做。**
+不要打印日志级别标签（`ERR`、`WARN` 等）或无关的上下文信息，除非在详细模式下。
 
-**Use a pager (e.g. `less`) if you are outputting a lot of text.**
-For example, `git diff` does this by default.
-Using a pager can be error-prone, so be careful with your implementation such that you don’t make the experience worse for the user.
-Use a pager only if `stdin` or `stdout` is an interactive terminal.
+**如果你要输出大量文本，使用分页器（如 `less`）。**
+例如，`git diff` 默认就是这样做的。
+使用分页器可能容易出错，所以要小心实现，这样你就不会让用户体验变得更糟。
+只有当 `stdin` 或 `stdout` 是交互式终端时才使用分页器。
 
-A good sensible set of options to use for `less` is `less -FIRX`.
-This does not page if the content fills one screen, ignores case when you search, enables color and formatting, and leaves the contents on the screen when `less` quits.
+`less` 的一组好的合理选项是 `less -FIRX`。
+如果内容填满一个屏幕，这不会分页，搜索时忽略大小写，启用颜色和格式化，并在 `less` 退出时将内容留在屏幕上。
 
-There might be libraries in your language that are more robust than piping to `less`.
-For example, [pypager](https://github.com/prompt-toolkit/pypager) in Python.
+你的语言中可能有比管道到 `less` 更健壮的库。
+例如，Python 中的 [pypager](https://github.com/prompt-toolkit/pypager)。
 
-### Errors {#errors}
+### 错误 {#errors}
 
-One of the most common reasons to consult documentation is to fix errors.
-If you can make errors into documentation, then this will save the user loads of time.
+查阅文档的最常见原因之一是修复错误。
+如果你能把错误变成文档，那将为用户节省大量时间。
 
-**Catch errors and rewrite them for humans.**
-If you’re expecting an error to happen, catch it and rewrite the error message to be useful.
-Think of it like a conversation, where the user has done something wrong and the program is guiding them in the right direction.
-Example: “Can’t write to file.txt. You might need to make it writable by running ‘chmod +w file.txt’.”
+**捕获错误并为人类重写它们。**
+如果你预期会发生错误，捕获它并重写错误消息使其有用。
+把它想象成一场对话，用户做错了什么，程序正在引导他们走向正确的方向。
+例如："无法写入 file.txt。你可能需要运行 'chmod +w file.txt' 使其可写。"
 
-**Signal-to-noise ratio is crucial.**
-The more irrelevant output you produce, the longer it’s going to take the user to figure out what they did wrong.
-If your program produces multiple errors of the same type, consider grouping them under a single explanatory header instead of printing many similar-looking lines.
+**信噪比至关重要。**
+你产生的无关输出越多，用户就需要越长时间来弄清楚他们做错了什么。
+如果你的程序产生多个相同类型的错误，考虑将它们分组在一个解释性标题下，而不是打印许多看起来相似的行。
 
-**Consider where the user will look first.**
-Put the most important information at the end of the output.
-The eye will be drawn to red text, so use it intentionally and sparingly.
+**考虑用户会首先看哪里。**
+把最重要的信息放在输出的末尾。
+眼睛会被红色文本吸引，所以要有意图地、谨慎地使用它。
 
-**If there is an unexpected or unexplainable error, provide debug and traceback information, and instructions on how to submit a bug.**
-That said, don’t forget about the signal-to-noise ratio: you don’t want to overwhelm the user with information they don’t understand.
-Consider writing the debug log to a file instead of printing it to the terminal.
+**如果有意外或无法解释的错误，提供调试和回溯信息，以及如何提交 bug 的说明。**
+话虽如此，不要忘记信噪比：你不想用他们不理解的信息压倒用户。
+考虑将调试日志写入文件而不是打印到终端。
 
-**Make it effortless to submit bug reports.**
-One nice thing you can do is provide a URL and have it pre-populate as much information as possible.
+**使提交 bug 报告变得轻而易举。**
+你可以做的一件好事是提供一个 URL，并让它预填尽可能多的信息。
 
-_Further reading: [Google: Writing Helpful Error Messages](https://developers.google.com/tech-writing/error-messages), [Nielsen Norman Group: Error-Message Guidelines](https://www.nngroup.com/articles/error-message-guidelines)_
+_延伸阅读：[Google: Writing Helpful Error Messages](https://developers.google.com/tech-writing/error-messages)、[Nielsen Norman Group: Error-Message Guidelines](https://www.nngroup.com/articles/error-message-guidelines)_
 
-### Arguments and flags {#arguments-and-flags}
+### 参数和标志 {#arguments-and-flags}
 
-A note on terminology:
+术语说明：
 
-- _Arguments_, or _args_, are positional parameters to a command.
-  For example, the file paths you provide to `cp` are args.
-  The order of args is often important: `cp foo bar` means something different from `cp bar foo`.
-- _Flags_ are named parameters, denoted with either a hyphen and a single-letter name (`-r`) or a double hyphen and a multiple-letter name (`--recursive`).
-  They may or may not also include a user-specified value (`--file foo.txt`, or `--file=foo.txt`).
-  The order of flags, generally speaking, does not affect program semantics.
+- _参数_，或 _args_，是命令的位置参数。
+  例如，你提供给 `cp` 的文件路径就是 args。
+  参数的顺序通常很重要：`cp foo bar` 和 `cp bar foo` 意思不同。
+- _标志_是命名参数，用连字符和单字母名称（`-r`）或双连字符和多字母名称（`--recursive`）表示。
+  它们可能包含也可能不包含用户指定的值（`--file foo.txt` 或 `--file=foo.txt`）。
+  标志的顺序，一般来说，不影响程序语义。
 
-**Prefer flags to args.**
-It’s a bit more typing, but it makes it much clearer what is going on.
-It also makes it easier to make changes to how you accept input in the future.
-Sometimes when using args, it’s impossible to add new input without breaking existing behavior or creating ambiguity.
+**优先使用标志而非参数。**
+这需要多打一点字，但让发生的事情更清楚。
+它还使将来更容易修改你接受输入的方式。
+有时使用参数时，不破坏现有行为或造成歧义就无法添加新输入。
 
-_Citation: [12 Factor CLI Apps](https://medium.com/@jdxcode/12-factor-cli-apps-dd3c227a0e46)._
+_引用：[12 Factor CLI Apps](https://medium.com/@jdxcode/12-factor-cli-apps-dd3c227a0e46)。_
 
-**Have full-length versions of all flags.**
-For example, have both `-h` and `--help`.
-Having the full version is useful in scripts where you want to be verbose and descriptive, and you don’t have to look up the meaning of flags everywhere.
+**所有标志都要有完整长度的版本。**
+例如，同时有 `-h` 和 `--help`。
+在脚本中有完整版本是有用的，你想要详细和描述性，而且你不必到处查找标志的含义。
 
-_Citation: [GNU Coding Standards](https://www.gnu.org/prep/standards/html_node/Command_002dLine-Interfaces.html)._
+_引用：[GNU Coding Standards](https://www.gnu.org/prep/standards/html_node/Command_002dLine-Interfaces.html)。_
 
-**Only use one-letter flags for commonly used flags,** particularly at the top-level when using subcommands.
-That way you don’t “pollute” your namespace of short flags, forcing you to use convoluted letters and cases for flags you add in the future.
+**只对常用标志使用单字母标志，**特别是在使用子命令时的顶级。
+这样你就不会"污染"你的短标志命名空间，迫使你在将来添加标志时使用复杂的字母和大小写。
 
-**Multiple arguments are fine for simple actions against multiple files.**
-For example, `rm file1.txt file2.txt file3.txt`.
-This also makes it work with globbing: `rm *.txt`.
+**对多个文件的简单操作，多个参数是可以的。**
+例如，`rm file1.txt file2.txt file3.txt`。
+这也使它与通配符一起工作：`rm *.txt`。
 
-**If you’ve got two or more arguments for different things, you’re probably doing something wrong.**
-The exception is a common, primary action, where the brevity is worth memorizing.
-For example, `cp <source> <destination>`.
+**如果你有两个或更多不同事物的参数，你可能做错了什么。**
+例外是常见的主要操作，其中简洁性值得记忆。
+例如，`cp <source> <destination>`。
 
-_Citation: [12 Factor CLI Apps](https://medium.com/@jdxcode/12-factor-cli-apps-dd3c227a0e46)._
+_引用：[12 Factor CLI Apps](https://medium.com/@jdxcode/12-factor-cli-apps-dd3c227a0e46)。_
 
-**Use standard names for flags, if there is a standard.**
-If another commonly used command uses a flag name, it’s best to follow that existing pattern.
-That way, a user doesn’t have to remember two different options (and which command it applies to), and users can even guess an option without having to look at the help text.
+**如果有标准，使用标准的标志名称。**
+如果另一个常用命令使用某个标志名称，最好遵循那个现有模式。
+这样，用户不必记住两个不同的选项（以及它适用于哪个命令），用户甚至可以在不查看帮助文本的情况下猜测选项。
 
-Here's a list of commonly used options:
+以下是常用选项的列表：
 
-- `-a`, `--all`: All.
-  For example, `ps`, `fetchmail`.
-- `-d`, `--debug`: Show debugging output.
-- `-f`, `--force`: Force.
-  For example, `rm -f` will force the removal of files, even if it thinks it does not have permission to do it.
-  This is also useful for commands which are doing something destructive that usually require user confirmation, but you want to force it to do that destructive action in a script.
-- `--json`: Display JSON output.
-  See the [output](#output) section.
-- `-h`, `--help`: Help.
-  This should only mean help.
-  See the [help](#help) section.
-- `-n`, `--dry-run`: Dry run. 
-  Do not run the command, but describe the changes that would occur if the command were run. For example, `rsync`, `git add`.
-- `--no-input`: See the [interactivity](#interactivity) section.
-- `-o`, `--output`: Output file.
-  For example, `sort`, `gcc`.
-- `-p`, `--port`: Port.
-  For example, `psql`, `ssh`.
-- `-q`, `--quiet`: Quiet.
-  Display less output.
-  This is particularly useful when displaying output for humans that you might want to hide when running in a script.
-- `-u`, `--user`: User.
-  For example, `ps`, `ssh`.
-- `--version`: Version.
-- `-v`: This can often mean either verbose or version.
-  You might want to use `-d` for verbose and this for version, or for nothing to avoid confusion.
+- `-a`、`--all`：全部。
+  例如，`ps`、`fetchmail`。
+- `-d`、`--debug`：显示调试输出。
+- `-f`、`--force`：强制。
+  例如，`rm -f` 将强制删除文件，即使它认为没有权限这样做。
+  这对于执行通常需要用户确认的破坏性操作的命令也很有用，但你想在脚本中强制执行那个破坏性操作。
+- `--json`：显示 JSON 输出。
+  参见[输出](#output)部分。
+- `-h`、`--help`：帮助。
+  这应该只意味着帮助。
+  参见[帮助](#help)部分。
+- `-n`、`--dry-run`：预演。
+  不运行命令，但描述如果运行命令会发生的更改。例如，`rsync`、`git add`。
+- `--no-input`：参见[交互性](#interactivity)部分。
+- `-o`、`--output`：输出文件。
+  例如，`sort`、`gcc`。
+- `-p`、`--port`：端口。
+  例如，`psql`、`ssh`。
+- `-q`、`--quiet`：安静。
+  显示更少的输出。
+  这在为人类显示输出时特别有用，你可能想在脚本中运行时隐藏它。
+- `-u`、`--user`：用户。
+  例如，`ps`、`ssh`。
+- `--version`：版本。
+- `-v`：这通常可以表示 verbose 或 version。
+  你可能想用 `-d` 表示 verbose，用这个表示 version，或者为了避免混淆什么都不用。
 
-**Make the default the right thing for most users.**
-Making things configurable is good, but most users are not going to find the right flag and remember to use it all the time (or alias it).
-If it’s not the default, you’re making the experience worse for most of your users.
+**使默认值对大多数用户来说是正确的。**
+使事物可配置是好的，但大多数用户不会找到正确的标志并记得一直使用它（或为它创建别名）。
+如果它不是默认值，你就是在为大多数用户使体验变得更糟。
 
-For example, `ls` has terse default output to optimize for scripts and other historical reasons, but if it were designed today, it would probably default to `ls -lhF`.
+例如，`ls` 有简洁的默认输出以优化脚本和其他历史原因，但如果今天设计它，它可能会默认为 `ls -lhF`。
 
-**Prompt for user input.**
-If a user doesn’t pass an argument or flag, prompt for it.
-(See also: [Interactivity](#interactivity))
+**提示用户输入。**
+如果用户没有传递参数或标志，提示它。
+（另见：[交互性](#interactivity)）
 
-**Never _require_ a prompt.**
-Always provide a way of passing input with flags or arguments.
-If `stdin` is not an interactive terminal, skip prompting and just require those flags/args.
+**永远不要_要求_提示。**
+总是提供一种通过标志或参数传递输入的方式。
+如果 `stdin` 不是交互式终端，跳过提示，只要求那些标志/参数。
 
-**Confirm before doing anything dangerous.**
-A common convention is to prompt for the user to type `y` or `yes` if running interactively, or requiring them to pass `-f` or `--force` otherwise.
+**在做任何危险的事情之前确认。**
+一个常见的惯例是，如果是交互式运行，提示用户输入 `y` 或 `yes`，否则要求他们传递 `-f` 或 `--force`。
 
-“Dangerous” is a subjective term, and there are differing levels of danger:
+"危险"是一个主观术语，有不同级别的危险：
 
-- **Mild:** A small, local change such as deleting a file.
-  You might want to prompt for confirmation, you might not.
-  For example, if the user is explicitly running a command called something like “delete,” you probably don’t need to ask.
-- **Moderate:** A bigger local change like deleting a directory, a remote change like deleting a resource of some kind, or a complex bulk modification that can’t be easily undone.
-  You usually want to prompt for confirmation here.
-  Consider giving the user a way to “dry run” the operation so they can see what’ll happen before they commit to it.
-- **Severe:** Deleting something complex, like an entire remote application or server.
-  You don’t just want to prompt for confirmation here—you want to make it hard to confirm by accident.
-  Consider asking them to type something non-trivial such as the name of the thing they’re deleting.
-  Let them alternatively pass a flag such as `--confirm="name-of-thing"`, so it’s still scriptable.
+- **轻度：**小的、局部的更改，如删除一个文件。
+  你可能想要提示确认，也可能不想。
+  例如，如果用户明确运行一个名为"delete"之类的命令，你可能不需要询问。
+- **中度：**更大的局部更改，如删除一个目录，删除某种远程资源的远程更改，或无法轻易撤销的复杂批量修改。
+  你通常想在这里提示确认。
+  考虑给用户一种方式来"预演"操作，这样他们可以在提交之前看到会发生什么。
+- **严重：**删除复杂的东西，如整个远程应用程序或服务器。
+  你不只是想在这里提示确认——你想使意外确认变得困难。
+  考虑要求他们输入一些非平凡的东西，如他们要删除的东西的名称。
+  让他们可以选择传递一个标志如 `--confirm="name-of-thing"`，这样它仍然可以脚本化。
 
-Consider whether there are non-obvious ways to accidentally destroy things.
-For example, imagine a situation where changing a number in a configuration file from 10 to 1 means that 9 things will be implicitly deleted—this should be considered a severe risk, and should be difficult to do by accident.
+考虑是否有非明显的方式意外销毁东西。
+例如，想象一种情况，将配置文件中的一个数字从 10 改为 1 意味着 9 个东西将被隐式删除——这应该被认为是严重风险，应该难以意外做到。
 
-**If input or output is a file, support `-` to read from `stdin` or write to `stdout`.**
-This lets the output of another command be the input of your command and vice versa, without using a temporary file.
-For example, `tar` can extract files from `stdin`:
+**如果输入或输出是文件，支持 `-` 从 `stdin` 读取或写入 `stdout`。**
+这让另一个命令的输出成为你的命令的输入，反之亦然，而不使用临时文件。
+例如，`tar` 可以从 `stdin` 提取文件：
 
 ```
 $ curl https://example.com/something.tar.gz | tar xvf -
 ```
 
-**If a flag can accept an optional value, allow a special word like “none”.**
-For example, `ssh -F` takes an optional filename of an alternative `ssh_config` file, and `ssh -F none` runs SSH with no config file. Don’t just use a blank value—this can make it ambiguous whether arguments are flag values or arguments.
+**如果标志可以接受可选值，允许一个特殊词如"none"。**
+例如，`ssh -F` 接受一个可选的替代 `ssh_config` 文件的文件名，而 `ssh -F none` 运行 SSH 不使用配置文件。不要只使用空白值——这会使参数是标志值还是参数变得模糊。
 
-**If possible, make arguments, flags and subcommands order-independent.**
-A lot of CLIs, especially those with subcommands, have unspoken rules on where you can put various arguments.
-For example a command might have a `--foo` flag that only works if you put it before the subcommand:
+**如果可能，使参数、标志和子命令的顺序无关。**
+很多 CLI，特别是那些有子命令的，对你可以在哪里放置各种参数有不成文的规则。
+例如，一个命令可能有一个 `--foo` 标志，只有当你把它放在子命令之前才起作用：
 
 ```
 mycmd --foo=1 subcmd
@@ -848,190 +842,189 @@ $ mycmd subcmd --foo=1
 unknown flag: --foo
 ```
 
-This can be very confusing for the user—especially given that one of the most common things users do when trying to get a command to work is to hit the up arrow to get the last invocation, stick another option on the end, and run it again.
-If possible, try to make both forms equivalent, although you might run up against the limitations of your argument parser.
+这对用户来说可能非常困惑——特别是考虑到用户在试图让命令工作时最常见的事情之一是按向上箭头获取上次调用，在末尾加上另一个选项，然后再次运行。
+如果可能，尝试使两种形式等效，尽管你可能会遇到参数解析器的限制。
 
-**Do not read secrets directly from flags.**
-When a command accepts a secret, e.g. via a `--password` flag,
-the flag value will leak the secret into `ps` output and potentially shell history.
-And, this sort of flag encourages the use of insecure environment variables for secrets.
-(Environment variables are insecure because they can often be read by other users, their values end up in debug logs, etc.)
+**不要直接从标志读取密钥。**
+当命令接受密钥时，例如通过 `--password` 标志，标志值会将密钥泄露到 `ps` 输出中，可能还有 shell 历史。
+而且，这种标志鼓励使用不安全的环境变量存储密钥。
+（环境变量是不安全的，因为它们通常可以被其他用户读取，它们的值最终会进入调试日志等。）
 
-Consider accepting sensitive data only via files, e.g. with a `--password-file` flag, or via `stdin`.
-A `--password-file` flag allows a secret to be passed in discreetly, in a wide variety of contexts.
+考虑只通过文件接受敏感数据，例如通过 `--password-file` 标志，或通过 `stdin`。
+`--password-file` 标志允许在各种上下文中谨慎地传递密钥。
 
-(It’s possible to pass a file’s contents into a flag in Bash by using `--password $(< password.txt)`.
-This approach has the same security problems mentioned above.
-It’s best avoided.)
+（在 Bash 中可以通过使用 `--password $(< password.txt)` 将文件内容传递给标志。
+这种方法有上面提到的同样的安全问题。
+最好避免。）
 
-### Interactivity {#interactivity}
+### 交互性 {#interactivity}
 
-**Only use prompts or interactive elements if `stdin` is an interactive terminal (a TTY).**
-This is a pretty reliable way to tell whether you’re piping data into a command or whether it's being run in a script, in which case a prompt won’t work and you should throw an error telling the user what flag to pass.
+**只有当 `stdin` 是交互式终端（TTY）时才使用提示或交互元素。**
+这是一种相当可靠的方式来判断你是在将数据管道到命令还是在脚本中运行，在这种情况下提示不会工作，你应该抛出一个错误，告诉用户要传递什么标志。
 
-**If `--no-input` is passed, don’t prompt or do anything interactive.**
-This allows users an explicit way to disable all prompts in commands.
-If the command requires input, fail and tell the user how to pass the information as a flag.
+**如果传入了 `--no-input`，不要提示或做任何交互式的事情。**
+这允许用户有一个明确的方式来禁用命令中的所有提示。
+如果命令需要输入，失败并告诉用户如何将信息作为标志传递。
 
-**If you’re prompting for a password, don’t print it as the user types.**
-This is done by turning off echo in the terminal.
-Your language should have helpers for this.
+**如果你在提示密码，不要在用户输入时打印它。**
+这是通过在终端中关闭回显来完成的。
+你的语言应该有这方面的辅助函数。
 
-**Let the user escape.**
-Make it clear how to get out.
-(Don’t do what vim does.)
-If your program hangs on network I/O etc, always make Ctrl-C still work.
-If it’s a wrapper around program execution where Ctrl-C can’t quit (SSH, tmux, telnet, etc), make it clear how to do that.
-For example, SSH allows escape sequences with the `~` escape character.
+**让用户可以退出。**
+明确如何退出。
+（不要做 vim 做的那样。）
+如果你的程序在网络 I/O 等上挂起，总是让 Ctrl-C 仍然工作。
+如果它是程序执行的包装器，而 Ctrl-C 不能退出（SSH、tmux、telnet 等），明确如何做到这一点。
+例如，SSH 允许使用 `~` 转义字符进行转义序列。
 
-### Subcommands
+### 子命令 {#subcommands}
 
-If you’ve got a tool that’s sufficiently complex, you can reduce its complexity by making a set of subcommands.
-If you have several tools that are very closely related, you can make them easier to use and discover by combining them into a single command (for example, RCS vs. Git).
+如果你有一个足够复杂的工具，你可以通过制作一组子命令来降低其复杂性。
+如果你有几个非常密切相关的工具，你可以通过将它们组合成一个命令使它们更容易使用和发现（例如，RCS vs. Git）。
 
-They’re useful for sharing stuff—global flags, help text, configuration, storage mechanisms.
+它们对共享东西很有用——全局标志、帮助文本、配置、存储机制。
 
-**Be consistent across subcommands.**
-Use the same flag names for the same things, have similar output formatting, etc. 
+**在子命令之间保持一致。**
+对相同的东西使用相同的标志名称，有类似的输出格式等。
 
-**Use consistent names for multiple levels of subcommand.**
-If a complex piece of software has lots of objects and operations that can be performed on those objects, it is a common pattern to use two levels of subcommand for this, where one is a noun and one is a verb.
-For example, `docker container create`.
-Be consistent with the verbs you use across different types of objects.
+**对多级子命令使用一致的名称。**
+如果一个复杂的软件有很多对象和可以对这些对象执行的操作，使用两级子命令是一种常见模式，其中一个是名词，一个是动词。
+例如，`docker container create`。
+在不同类型的对象之间使用一致的动词。
 
-Either `noun verb` or `verb noun` ordering works, but `noun verb` seems to be more common.
+`noun verb` 或 `verb noun` 顺序都可以工作，但 `noun verb` 似乎更常见。
 
-_Further reading: [User experience, CLIs, and breaking the world, by John Starich](https://uxdesign.cc/user-experience-clis-and-breaking-the-world-baed8709244f)._
+_延伸阅读：[User experience, CLIs, and breaking the world, by John Starich](https://uxdesign.cc/user-experience-clis-and-breaking-the-world-baed8709244f)。_
 
-**Don’t have ambiguous or similarly-named commands.**
-For example, having two subcommands called “update” and “upgrade” is quite confusing.
-You might want to use different words, or disambiguate with extra words.
+**不要有模糊或名称相似的命令。**
+例如，有两个名为"update"和"upgrade"的子命令是相当令人困惑的。
+你可能想使用不同的词，或用额外的词来消除歧义。
 
-### Robustness {#robustness-guidelines}
+### 健壮性 {#robustness-guidelines}
 
-**Validate user input.**
-Everywhere your program accepts data from the user, it will eventually be given bad data.
-Check early and bail out before anything bad happens, and [make the errors understandable](#errors).
+**验证用户输入。**
+在你的程序接受用户数据的每个地方，它最终都会收到错误的数据。
+尽早检查并在任何坏事发生之前退出，并[使错误可理解](#errors)。
 
-**Responsive is more important than fast.**
-Print something to the user in <100ms.
-If you’re making a network request, print something before you do it so it doesn’t hang and look broken.
+**响应比快更重要。**
+在 100 毫秒内向用户打印一些东西。
+如果你正在进行网络请求，在你做之前打印一些东西，这样它就不会挂起并看起来像坏了。
 
-**Show progress if something takes a long time.**
-If your program displays no output for a while, it will look broken.
-A good spinner or progress indicator can make a program appear to be faster than it is.
+**如果某事需要很长时间，显示进度。**
+如果你的程序有一段时间不显示输出，它会看起来像坏了。
+一个好的转圈或进度指示器可以使程序看起来比实际更快。
 
-Ubuntu 20.04 has a nice progress bar that sticks to the bottom of the terminal.
+Ubuntu 20.04 有一个很好的进度条，固定在终端底部。
 
 <!-- (TK reproduce this as a code block or animated SVG) -->
 
-If the progress bar gets stuck in one place for a long time, the user won’t know if stuff is still happening or if the program’s crashed.
-It’s good to show estimated time remaining, or even just have an animated component, to reassure them that you’re still working on it.
+如果进度条长时间停在一个地方，用户不会知道事情是否仍在发生或程序是否崩溃了。
+显示估计剩余时间，或者甚至只是有一个动画组件，来向他们保证你仍在工作，这是好的。
 
-There are many good libraries for generating progress bars.
-For example, [tqdm](https://github.com/tqdm/tqdm) for Python, [schollz/progressbar](https://github.com/schollz/progressbar) for Go, and [node-progress](https://github.com/visionmedia/node-progress) for Node.js.
+有许多好的库用于生成进度条。
+例如，Python 的 [tqdm](https://github.com/tqdm/tqdm)，Go 的 [schollz/progressbar](https://github.com/schollz/progressbar)，和 Node.js 的 [node-progress](https://github.com/visionmedia/node-progress)。
 
-**Do stuff in parallel where you can, but be thoughtful about it.**
-It’s already difficult to report progress in the shell; doing it for parallel processes is ten times harder.
-Make sure it’s robust, and that the output isn’t confusingly interleaved.
-If you can use a library, do so—this is code you don’t want to write yourself.
-Libraries like [tqdm](https://github.com/tqdm/tqdm) for Python and [schollz/progressbar](https://github.com/schollz/progressbar) for Go support multiple progress bars natively.
+**在可能的地方并行做事，但要深思熟虑。**
+在 shell 中报告进度已经很困难了；为并行进程做这件事难十倍。
+确保它是健壮的，输出不会令人困惑地交错。
+如果你可以使用库，就使用——这是你不想自己写的代码。
+像 Python 的 [tqdm](https://github.com/tqdm/tqdm) 和 Go 的 [schollz/progressbar](https://github.com/schollz/progressbar) 这样的库原生支持多个进度条。
 
-The upside is that it can be a huge usability gain.
-For example, `docker pull`’s multiple progress bars offer crucial insight into what’s going on.
+好处是它可能是一个巨大的可用性提升。
+例如，`docker pull` 的多个进度条提供了对正在发生什么的关键洞察。
 
 ```
 $ docker image pull ruby
 Using default tag: latest
 latest: Pulling from library/ruby
-6c33745f49b4: Pull complete 
+6c33745f49b4: Pull complete
 ef072fc32a84: Extracting [================================================>  ]  7.569MB/7.812MB
-c0afb8e68e0b: Download complete 
-d599c07d28e6: Download complete 
+c0afb8e68e0b: Download complete
+d599c07d28e6: Download complete
 f2ecc74db11a: Downloading [=======================>                           ]  89.11MB/192.3MB
-3568445c8bf2: Download complete 
+3568445c8bf2: Download complete
 b0efebc74f25: Downloading [===========================================>       ]  19.88MB/22.88MB
-9cb1ba6838a0: Download complete 
+9cb1ba6838a0: Download complete
 ```
 
-One thing to be aware of: hiding logs behind progress bars when things go _well_ makes it much easier for the user to understand what’s going on, but if there is an error, make sure you print out the logs.
-Otherwise, it will be very hard to debug.
+要注意的一件事是：当事情进展_顺利_时，在进度条后面隐藏日志使用户更容易理解正在发生什么，但如果有错误，确保你打印出日志。
+否则，将很难调试。
 
-**Make things time out.**
-Allow network timeouts to be configured, and have a reasonable default so it doesn’t hang forever.
+**让事情超时。**
+允许网络超时被配置，并有一个合理的默认值，这样它就不会永远挂起。
 
-**Make it recoverable.**
-If the program fails for some transient reason (e.g. the internet connection went down), you should be able to hit `<up>` and `<enter>` and it should pick up from where it left off.
+**使其可恢复。**
+如果程序因为某些暂时性原因失败（例如，互联网连接断开），你应该能够按 `<up>` 和 `<enter>`，它应该从它离开的地方继续。
 
-**Make it crash-only.**
-This is the next step up from idempotence.
-If you can avoid needing to do any cleanup after operations, or you can defer that cleanup to the next run, your program can exit immediately on failure or interruption.
-This makes it both more robust and more responsive.
+**使其仅崩溃。**
+这是幂等性的下一步。
+如果你可以避免在操作后需要做任何清理，或者你可以将该清理推迟到下次运行，你的程序可以在失败或中断时立即退出。
+这使它既更健壮又更响应。
 
-_Citation: [Crash-only software: More than meets the eye](https://lwn.net/Articles/191059/)._
+_引用：[Crash-only software: More than meets the eye](https://lwn.net/Articles/191059/)。_
 
-**People are going to misuse your program.**
-Be prepared for that.
-They will wrap it in scripts, use it on bad internet connections, run many instances of it at once, and use it in environments you haven’t tested in, with quirks you didn’t anticipate.
-(Did you know macOS filesystems are case-insensitive but also case-preserving?)
+**人们会误用你的程序。**
+为此做好准备。
+他们会把它包装在脚本中，在糟糕的互联网连接上使用它，同时运行它的多个实例，并在你没有测试过的环境中使用它，有你没有预料到的怪癖。
+（你知道 macOS 文件系统是大小写不敏感但同时保留大小写的吗？）
 
-### Future-proofing {#future-proofing}
+### 面向未来 {#future-proofing}
 
-In software of any kind, it’s crucial that interfaces don’t change without a lengthy and well-documented deprecation process.
-Subcommands, arguments, flags, configuration files, environment variables: these are all interfaces, and you’re committing to keeping them working.
-([Semantic versioning](https://semver.org/) can only excuse so much change; if you’re putting out a major version bump every month, it’s meaningless.)
+在任何类型的软件中，接口不经过长期和有充分文档记录的弃用过程就不能改变是至关重要的。
+子命令、参数、标志、配置文件、环境变量：这些都是接口，你承诺保持它们工作。
+（[语义化版本控制](https://semver.org/)只能原谅这么多变化；如果你每个月都推出一个主版本号升级，那就没有意义了。）
 
-**Keep changes additive where you can.**
-Rather than modify the behavior of a flag in a backwards-incompatible way, maybe you can add a new flag—as long as it doesn’t bloat the interface too much.
-(See also: [Prefer flags to args](#arguments-and-flags).)
+**尽可能保持变更是增量式的。**
+与其以向后不兼容的方式修改标志的行为，也许你可以添加一个新标志——只要它不会使接口太臃肿。
+（另见：[优先使用标志而非参数](#arguments-and-flags)。）
 
-**Warn before you make a non-additive change.**
-Eventually, you’ll find that you can’t avoid breaking an interface.
-Before you do, forewarn your users in the program itself: when they pass the flag you’re looking to deprecate, tell them it’s going to change soon.
-Make sure there’s a way they can modify their usage today to make it future-proof, and tell them how to do it.
+**在做非增量式变更之前发出警告。**
+最终，你会发现你无法避免破坏一个接口。
+在你这样做之前，在程序本身中警告你的用户：当他们传递你要弃用的标志时，告诉他们它即将改变。
+确保他们有办法今天就修改他们的用法以使其面向未来，并告诉他们怎么做。
 
-If possible, you should detect when they’ve changed their usage and not show the warning any more: now they won’t notice a thing when you finally roll out the change.
+如果可能的话，你应该检测他们何时已经改变了他们的用法，不再显示警告：现在当你最终推出变更时他们不会注意到任何东西。
 
-**Changing output for humans is usually OK.**
-The only way to make an interface easy to use is to iterate on it, and if the output is considered an interface, then you can’t iterate on it.
-Encourage your users to use `--plain` or `--json` in scripts to keep output stable (see [Output](#output)).
+**改变人类的输出通常是可以的。**
+使接口易于使用的唯一方法是迭代它，如果输出被认为是接口，那么你就不能迭代它。
+鼓励你的用户在脚本中使用 `--plain` 或 `--json` 来保持输出稳定（见[输出](#output)）。
 
-**Don’t have a catch-all subcommand.**
-If you have a subcommand that’s likely to be the most-used one, you might be tempted to let people omit it entirely for brevity’s sake.
-For example, say you have a `run` command that wraps an arbitrary shell command:
+**不要有万能子命令。**
+如果你有一个可能是最常用的子命令，你可能会想让人们为了简洁而完全省略它。
+例如，假设你有一个包装任意 shell 命令的 `run` 命令：
 
     $ mycmd run echo "hello world"
 
-You could make it so that if the first argument to `mycmd` isn’t the name of an existing subcommand, you assume the user means `run`, so they can just type this:
+你可以做到这样，如果 `mycmd` 的第一个参数不是现有子命令的名称，你就假设用户是指 `run`，这样他们就可以只输入这个：
 
     $ mycmd echo "hello world"
 
-This has a serious drawback, though: now you can never add a subcommand named `echo`—or _anything at all_—without risking breaking existing usages.
-If there’s a script out there that uses `mycmd echo`, it will do something entirely different after that user upgrades to the new version of your tool.
+然而，这有一个严重的缺点：现在你永远不能添加一个名为 `echo` 的子命令——或_任何东西_——而不冒险破坏现有用法。
+如果有一个脚本使用 `mycmd echo`，在那个用户升级到你工具的新版本后，它会做完全不同的事情。
 
-**Don’t allow arbitrary abbreviations of subcommands.**
-For example, say your command has an `install` subcommand.
-When you added it, you wanted to save users some typing, so you allowed them to type any non-ambiguous prefix, like `mycmd ins`, or even just `mycmd i`, and have it be an alias for `mycmd install`.
-Now you’re stuck: you can’t add any more commands beginning with `i`, because there are scripts out there that assume `i` means `install`.
+**不允许子命令的任意缩写。**
+例如，假设你的命令有一个 `install` 子命令。
+当你添加它时，你想为用户节省一些打字，所以你允许他们输入任何非歧义的前缀，如 `mycmd ins`，甚至只是 `mycmd i`，并让它成为 `mycmd install` 的别名。
+现在你被困住了：你不能再添加任何以 `i` 开头的命令，因为有脚本假设 `i` 意味着 `install`。
 
-There’s nothing wrong with aliases—saving on typing is good—but they should be explicit and remain stable.
+别名没有什么问题——节省打字是好的——但它们应该是显式的并保持稳定。
 
-**Don’t create a “time bomb.”**
-Imagine it’s 20 years from now.
-Will your command still run the same as it does today, or will it stop working because some external dependency on the internet has changed or is no longer maintained?
-The server most likely to not exist in 20 years is the one that you are maintaining right now.
-(But don’t build in a blocking call to Google Analytics either.)
+**不要创建"定时炸弹"。**
+想象 20 年后。
+你的命令还会像今天一样运行吗，还是因为互联网上某些外部依赖项已经改变或不再维护而停止工作？
+最有可能在 20 年后不存在的服务器是你现在正在维护的那个。
+（但也不要内置一个阻塞调用到 Google Analytics。）
 
-### Signals and control characters {#signals}
+### 信号和控制字符 {#signals}
 
-**If a user hits Ctrl-C (the INT signal), exit as soon as possible.**
-Say something immediately, before you start clean-up.
-Add a timeout to any clean-up code so it can’t hang forever.
+**如果用户按下 Ctrl-C（INT 信号），尽快退出。**
+在你开始清理之前立即说些什么。
+为任何清理代码添加超时，这样它就不能永远挂起。
 
-**If a user hits Ctrl-C during clean-up operations that might take a long time, skip them.**
-Tell the user what will happen when they hit Ctrl-C again, in case it is a destructive action.
+**如果用户在可能需要很长时间的清理操作期间按下 Ctrl-C，跳过它们。**
+告诉用户当他们再次按下 Ctrl-C 时会发生什么，以防它是破坏性操作。
 
-For example, when quitting Docker Compose, you can hit Ctrl-C a second time to force your containers to stop immediately instead of shutting them down gracefully.
+例如，当退出 Docker Compose 时，你可以第二次按 Ctrl-C 来强制你的容器立即停止，而不是优雅地关闭它们。
 
 ```
 $  docker-compose up
@@ -1039,201 +1032,200 @@ $  docker-compose up
 ^CGracefully stopping... (press Ctrl+C again to force)
 ```
 
-Your program should expect to be started in a situation where clean-up has not been run.
-(See [Crash-only software: More than meets the eye](https://lwn.net/Articles/191059/).)
+你的程序应该预期在没有运行清理的情况下启动。
+（见 [Crash-only software: More than meets the eye](https://lwn.net/Articles/191059/)。）
 
-### Configuration {#configuration}
+### 配置 {#configuration}
 
-Command-line tools have lots of different types of configuration, and lots of different ways to supply it (flags, environment variables, project-level config files).
-The best way to supply each piece of configuration depends on a few factors, chief among them _specificity_, _stability_ and _complexity_.
+命令行工具有很多不同类型的配置，以及很多不同的提供方式（标志、环境变量、项目级配置文件）。
+提供每条配置的最佳方式取决于几个因素，其中最重要的是_特定性_、_稳定性_和_复杂性_。
 
-Configuration generally falls into a few categories:
+配置一般分为几类：
 
-1.  Likely to vary from one invocation of the command to the next.
+1.  可能在命令的每次调用之间变化。
 
-    Examples:
+    示例：
 
-    - Setting the level of debugging output
-    - Enabling a safe mode or dry run of a program
+    - 设置调试输出的级别
+    - 启用程序的安全模式或预演
 
-    Recommendation: **Use [flags](#arguments-and-flags).**
-    [Environment variables](#environment-variables) may or may not be useful as well.
+    建议：**使用[标志](#arguments-and-flags)。**
+    [环境变量](#environment-variables)也可能有用。
 
-2.  Generally stable from one invocation to the next, but not always.
-    Might vary between projects.
-    Definitely varies between different users working on the same project.
+2.  通常在每次调用之间稳定，但不总是。
+    可能在项目之间变化。
+    在同一项目的不同用户之间肯定会变化。
 
-    This type of configuration is often specific to an individual computer.
+    这种类型的配置通常特定于单个计算机。
 
-    Examples:
+    示例：
 
-    - Providing a non-default path to items needed for a program to start
-    - Specifying how or whether color should appear in output
-    - Specifying an HTTP proxy server to route all requests through
+    - 为程序启动所需的项目提供非默认路径
+    - 指定颜色应该如何或是否出现在输出中
+    - 指定一个 HTTP 代理服务器来路由所有请求
 
-    Recommendation: **Use [flags](#arguments-and-flags) and probably [environment variables](#environment-variables) too.**
-    Users may want to set the variables in their shell profile so they apply globally, or in `.env` for a particular project.
+    建议：**使用[标志](#arguments-and-flags)，可能也使用[环境变量](#environment-variables)。**
+    用户可能想在他们的 shell 配置文件中设置变量以使其全局应用，或在 `.env` 中为特定项目设置。
 
-    If this configuration is sufficiently complex, it may warrant a configuration file of its own, but environment variables are usually good enough.
+    如果这种配置足够复杂，它可能需要一个自己的配置文件，但环境变量通常就足够了。
 
-3.  Stable within a project, for all users.
+3.  在项目内稳定，对所有用户。
 
-    This is the type of configuration that belongs in version control.
-    Files like `Makefile`, `package.json` and `docker-compose.yml` are all examples of this.
+    这是属于版本控制的配置类型。
+    像 `Makefile`、`package.json` 和 `docker-compose.yml` 这样的文件都是这方面的例子。
 
-    Recommendation: **Use a command-specific, version-controlled file.**
+    建议：**使用命令特定的、版本控制的文件。**
 
-**Follow the XDG-spec.**
-In 2010 the X Desktop Group, now [freedesktop.org](https://freedesktop.org), developed a specification for the location of base directories where config files may be located.
-One goal was to limit the proliferation of dotfiles in a user’s home directory by supporting a general-purpose `~/.config` folder.
-The XDG Base Directory Specification ([full spec](https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html), [summary](https://wiki.archlinux.org/index.php/XDG_Base_Directory#Specification)) is supported by yarn, fish, wireshark, emacs, neovim, tmux, and many other projects you know and love.
+**遵循 XDG 规范。**
+2010 年，X Desktop Group，现在的 [freedesktop.org](https://freedesktop.org)，制定了一个关于配置文件可能位于的基本目录位置的规范。
+一个目标是通过支持一个通用的 `~/.config` 文件夹来限制用户主目录中点文件的增殖。
+XDG 基本目录规范（[完整规范](https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html)，[摘要](https://wiki.archlinux.org/index.php/XDG_Base_Directory#Specification)）被 yarn、fish、wireshark、emacs、neovim、tmux 和许多你知道和喜欢的其他项目支持。
 
-**If you automatically modify configuration that is not your program’s, ask the user for consent and tell them exactly what you’re doing.**
-Prefer creating a new config file (e.g. `/etc/cron.d/myapp`) rather than appending to an existing config file (e.g. `/etc/crontab`).
-If you have to append or modify to a system-wide config file, use a dated comment in that file to delineate your additions.
+**如果你自动修改不是你程序的配置，征求用户同意并告诉他们你在做什么。**
+优先创建一个新的配置文件（例如 `/etc/cron.d/myapp`）而不是追加到现有的配置文件（例如 `/etc/crontab`）。
+如果你必须追加或修改系统范围的配置文件，在该文件中使用带日期的注释来划分你的添加。
 
-**Apply configuration parameters in order of precedence.**
-Here is the precedence for config parameters, from highest to lowest:
+**按优先顺序应用配置参数。**
+以下是配置参数的优先级，从高到低：
 
-- Flags
-- The running shell’s environment variables
-- Project-level configuration (e.g. `.env`)
-- User-level configuration
-- System wide configuration
+- 标志
+- 正在运行的 shell 的环境变量
+- 项目级配置（例如 `.env`）
+- 用户级配置
+- 系统范围配置
 
-### Environment variables {#environment-variables}
+### 环境变量 {#environment-variables}
 
-**Environment variables are for behavior that _varies with the context_ in which a command is run.**
-The “environment” of an environment variable is the terminal session—the context in which the command is running.
-So, an env var might change each time a command runs, or between terminal sessions on one machine, or between instantiations of one project across several machines.
+**环境变量用于_随命令运行上下文而变化_的行为。**
+环境变量的"环境"是终端会话——命令运行的上下文。
+所以，环境变量可能在每次命令运行时变化，或在一台机器上的终端会话之间变化，或在跨多台机器的一个项目的实例之间变化。
 
-Environment variables may duplicate the functionality of flags or configuration parameters, or they may be distinct from those things.
-See [Configuration](#configuration) for a breakdown of common types of configuration and recommendations on when environment variables are most appropriate.
+环境变量可能复制标志或配置参数的功能，或者它们可能与这些不同。
+参见[配置](#configuration)以获取常见配置类型的分解和环境变量最合适的时机的建议。
 
-**For maximum portability, environment variable names must only contain uppercase letters, numbers, and underscores (and mustn't start with a number).**
-Which means `O_O` and `OWO` are the only emoticons that are also valid environment variable names.
+**为了最大的可移植性，环境变量名称必须只包含大写字母、数字和下划线（并且不能以数字开头）。**
+这意味着 `O_O` 和 `OWO` 是唯一同时也是有效环境变量名称的表情符号。
 
-**Aim for single-line environment variable values.**
-While multi-line values are possible, they create usability issues with the `env` command.
+**目标是单行环境变量值。**
+虽然多行值是可能的，但它们会造成 `env` 命令的可用性问题。
 
-**Avoid commandeering widely used names.**
-Here’s a [list of POSIX standard env vars](https://pubs.opengroup.org/onlinepubs/009695399/basedefs/xbd_chap08.html).
+**避免占用广泛使用的名称。**
+这里有一个 [POSIX 标准环境变量列表](https://pubs.opengroup.org/onlinepubs/009695399/basedefs/xbd_chap08.html)。
 
-**Check general-purpose environment variables for configuration values when possible:**
+**尽可能检查通用环境变量的配置值：**
 
-- `NO_COLOR`, to disable color (see [Output](#output)) or `FORCE_COLOR` to enable it and ignore the detection logic
-- `DEBUG`, to enable more verbose output
-- `EDITOR`, if you need to prompt the user to edit a file or input more than a single line
-- `HTTP_PROXY`, `HTTPS_PROXY`, `ALL_PROXY` and `NO_PROXY`, if you’re going to perform network operations
-  (The HTTP library you’re using might already check for these.)
-- `SHELL`, if you need to open up an interactive session of the user's preferred shell
-  (If you need to execute a shell script, use a specific interpreter like `/bin/sh`)
-- `TERM`, `TERMINFO` and `TERMCAP`, if you’re going to use terminal-specific escape sequences
-- `TMPDIR`, if you’re going to create temporary files
-- `HOME`, for locating configuration files
-- `PAGER`, if you want to automatically page output
-- `LINES` and `COLUMNS`, for output that’s dependent on screen size (e.g. tables)
+- `NO_COLOR`，禁用颜色（见[输出](#output)）或 `FORCE_COLOR` 启用它并忽略检测逻辑
+- `DEBUG`，启用更详细的输出
+- `EDITOR`，如果你需要提示用户编辑文件或输入多于一行
+- `HTTP_PROXY`、`HTTPS_PROXY`、`ALL_PROXY` 和 `NO_PROXY`，如果你要执行网络操作
+  （你使用的 HTTP 库可能已经检查这些了。）
+- `SHELL`，如果你需要打开用户首选 shell 的交互式会话
+  （如果你需要执行 shell 脚本，使用特定的解释器如 `/bin/sh`）
+- `TERM`、`TERMINFO` 和 `TERMCAP`，如果你要使用终端特定的转义序列
+- `TMPDIR`，如果你要创建临时文件
+- `HOME`，用于定位配置文件
+- `PAGER`，如果你想自动分页输出
+- `LINES` 和 `COLUMNS`，用于依赖于屏幕大小的输出（例如，表格）
 
-**Read environment variables from `.env` where appropriate.**
-If a command defines environment variables that are unlikely to change as long as the user is working in a particular directory,
-then it should also read them from a local `.env` file so users can configure it differently for different projects without having to specify them every time.
-Many languages have libraries for reading `.env` files ([Rust](https://crates.io/crates/dotenv), [Node](https://www.npmjs.com/package/dotenv), [Ruby](https://github.com/bkeepers/dotenv)).
+**在适当的地方从 `.env` 读取环境变量。**
+如果命令定义的环境变量在用户在特定目录中工作时不太可能改变，那么它也应该从本地 `.env` 文件读取它们，这样用户可以为不同的项目配置不同的设置，而不必每次都指定它们。
+许多语言都有用于读取 `.env` 文件的库（[Rust](https://crates.io/crates/dotenv)、[Node](https://www.npmjs.com/package/dotenv)、[Ruby](https://github.com/bkeepers/dotenv)）。
 
-**Don’t use `.env` as a substitute for a proper [configuration file](#configuration).**
-`.env` files have a lot of limitations:
+**不要使用 `.env` 作为适当的[配置文件](#configuration)的替代品。**
+`.env` 文件有很多限制：
 
-- A `.env` file is not commonly stored in source control
-- (Therefore, any configuration stored in it has no history)
-- It has only one data type: string
-- It lends itself to being poorly organized
-- It makes encoding issues easy to introduce
-- It often contains sensitive credentials & key material that would be better stored more securely
+- `.env` 文件通常不存储在源代码控制中
+- （因此，存储在其中的任何配置都没有历史记录）
+- 它只有一种数据类型：字符串
+- 它容易被组织得很糟糕
+- 它容易引入编码问题
+- 它经常包含敏感的凭据和密钥材料，这些最好更安全地存储
 
-If it seems like these limitations will hamper usability or security, then a dedicated config file might be more appropriate.
+如果看起来这些限制会妨碍可用性或安全性，那么专用的配置文件可能更合适。
 
-**Do not read secrets from environment variables.**
-While environment variables may be convenient for storing secrets, they have proven too prone to leakage:
-- Exported environment variables are sent to every process, and from there can easily leak into logs or be exfiltrated
-- Shell substitutions like `curl -H "Authorization: Bearer $BEARER_TOKEN"` will leak into globally-readable process state.
-  (cURL offers the `-H @filename` alternative for reading sensitive headers from a file.)
-- Docker container environment variables can be viewed by anyone with Docker daemon access via `docker inspect`
-- Environment variables in systemd units are globally readable via `systemctl show`
+**不要从环境变量读取密钥。**
+虽然环境变量可能方便存储密钥，但它们已被证明太容易泄露：
+- 导出的环境变量被发送到每个进程，从那里可以很容易地泄露到日志中或被窃取
+- Shell 替换如 `curl -H "Authorization: Bearer $BEARER_TOKEN"` 将泄露到全局可读的进程状态中。
+  （cURL 提供了 `-H @filename` 替代方案，用于从文件读取敏感头。）
+- Docker 容器环境变量可以被任何有 Docker 守护进程访问权限的人通过 `docker inspect` 查看
+- systemd 单元中的环境变量可以通过 `systemctl show` 全局读取
 
-Secrets should only be accepted via credential files, pipes, `AF_UNIX` sockets, secret management services, or another IPC mechanism.
+密钥只应该通过凭据文件、管道、`AF_UNIX` 套接字、密钥管理服务或其他 IPC 机制接受。
 
-### Naming {#naming}
+### 命名 {#naming}
 
-> “Note the obsessive use of abbreviations and avoidance of capital letters; [Unix] is a system invented by people to whom repetitive stress disorder is what black lung is to miners.
-> Long names get worn down to three-letter nubbins, like stones smoothed by a river.”
-> — Neal Stephenson, _[In the Beginning was the Command Line](https://web.stanford.edu/class/cs81n/command.txt)_
+> "注意对缩写的痴迷和对大写字母的回避；[Unix] 是由对他们来说重复性压力障碍就像矿工的黑肺病一样的人发明的系统。
+> 长名字被磨损成三个字母的残块，就像被河流磨平的石头。"
+> — Neal Stephenson，_[In the Beginning was the Command Line](https://web.stanford.edu/class/cs81n/command.txt)_
 
-The name of your program is particularly important on the CLI: your users will be typing it all the time, and it needs to be easy to remember and type.
+你的程序名称在 CLI 上特别重要：你的用户会一直输入它，它需要容易记住和输入。
 
-**Make it a simple, memorable word.**
-But not too generic, or you’ll step on the toes of other commands and confuse users.
-For example, both ImageMagick and Windows used the command `convert`.
+**使它成为一个简单、容易记住的词。**
+但不要太通用，否则你会踩到其他命令的脚趾头并让用户困惑。
+例如，ImageMagick 和 Windows 都使用了命令 `convert`。
 
-**Use only lowercase letters, and dashes if you really need to.**
-`curl` is a good name, `DownloadURL` is not.
+**只使用小写字母，如果真的需要就用破折号。**
+`curl` 是一个好名字，`DownloadURL` 不是。
 
-**Keep it short.**
-Users will be typing it all the time.
-Don’t make it _too_ short: the very shortest commands are best reserved for the common utilities used all the time, such as `cd`, `ls`, `ps`.
+**保持简短。**
+用户会一直输入它。
+不要把它做得_太_短：最短的命令最好保留给一直使用的常见实用程序，如 `cd`、`ls`、`ps`。
 
-**Make it easy to type.**
-If you expect people to type your command name all day, make it easy on their hands.
+**使它容易输入。**
+如果你期望人们整天输入你的命令名，让他们的手轻松一点。
 
-A real-world example: long before Docker Compose was `docker compose`, it was [`plum`](https://github.com/aanand/fig/blob/0eb7d308615bae1ad4be1ca5112ac7b6b6cbfbaf/setup.py#L26).
-This turned out to be such an awkward, one-handed hopscotch that it was immediately renamed to [`fig`](https://github.com/aanand/fig/commit/0cafdc9c6c19dab2ef2795979dc8b2f48f623379), which – as well as being shorter – flows much more easily.
+一个真实的例子：在 Docker Compose 成为 `docker compose` 之前很久，它是 [`plum`](https://github.com/aanand/fig/blob/0eb7d308615bae1ad4be1ca5112ac7b6b6cbfbaf/setup.py#L26)。
+这原来是一个如此尴尬的、单手跳跃的动作，以至于它立即被重命名为 [`fig`](https://github.com/aanand/fig/commit/0cafdc9c6c19dab2ef2795979dc8b2f48f623379)，它——除了更短之外——流畅得多。
 
-_Further reading: [The Poetics of CLI Command Names](https://smallstep.com/blog/the-poetics-of-cli-command-names/)_
+_延伸阅读：[The Poetics of CLI Command Names](https://smallstep.com/blog/the-poetics-of-cli-command-names/)_
 
-### Distribution {#distribution}
+### 分发 {#distribution}
 
-**If possible, distribute as a single binary.**
-If your language doesn’t compile to binary executables as standard, see if it has something like [PyInstaller](https://www.pyinstaller.org/).
-If you really can’t distribute as a single binary, use the platform’s native package installer so you aren’t scattering things on disk that can’t easily be removed.
-Tread lightly on the user’s computer.
+**如果可能，作为单个二进制文件分发。**
+如果你的语言默认不编译成二进制可执行文件，看看它是否有像 [PyInstaller](https://www.pyinstaller.org/) 这样的东西。
+如果你真的不能作为单个二进制文件分发，使用平台的原生包安装程序，这样你就不会在磁盘上散布无法轻易删除的东西。
+轻踏用户的计算机。
 
-If you’re making a language-specific tool, such as a code linter, then this rule doesn’t apply—it’s safe to assume the user has an interpreter for that language installed on their computer.
+如果你正在制作语言特定的工具，如代码检查器，那么这条规则不适用——可以安全地假设用户的计算机上安装了该语言的解释器。
 
-**Make it easy to uninstall.**
-If it needs instructions, put them at the bottom of the install instructions—one of the most common times people want to uninstall software is right after installing it.
+**使它容易卸载。**
+如果需要说明，把它们放在安装说明的底部——人们想要卸载软件最常见的时机之一就是在安装之后。
 
-### Analytics {#analytics}
+### 分析 {#analytics}
 
-Usage metrics can be helpful to understand how users are using your program, how to make it better, and where to focus effort.
-But, unlike websites, users of the command-line expect to be in control of their environment, and it is surprising when programs do things in the background without telling them.
+使用指标可以帮助了解用户如何使用你的程序，如何使其更好，以及在哪里集中精力。
+但是，与网站不同，命令行用户期望控制自己的环境，当程序在后台做事而不告诉他们时会感到惊讶。
 
-**Do not phone home usage or crash data without consent.**
-Users will find out, and they will be angry.
-Be very explicit about what you collect, why you collect it, how anonymous it is and how you go about anonymizing it, and how long you retain it for.
+**未经同意不要发送使用或崩溃数据。**
+用户会发现的，他们会很生气。
+非常明确地说明你收集了什么，为什么收集，它有多匿名，你如何匿名化它，以及你保留多长时间。
 
-Ideally, ask users whether they want to contribute data (“opt-in”).
-If you choose to do it by default (“opt-out”), then clearly tell users about it on your website or first run, and make it easy to disable.
+理想情况下，询问用户是否想要贡献数据（"选择加入"）。
+如果你选择默认这样做（"选择退出"），那么在你的网站上或首次运行时清楚地告诉用户，并使其容易禁用。
 
-Examples of projects that collect usage statistics:
+收集使用统计数据的项目示例：
 
-- Angular.js [collects detailed analytics using Google Analytics](https://angular.io/analytics), in the name of feature prioritization.
-  You have to explicitly opt in.
-  You can change the tracking ID to point to your own Google Analytics property if you want to track Angular usage inside your organization.
-- Homebrew sends metrics to Google Analytics and has [a nice FAQ](https://docs.brew.sh/Analytics) detailing their practices.
-- Next.js [collects anonymized usage statistics](https://nextjs.org/telemetry) and is enabled by default.
+- Angular.js 以功能优先级的名义[使用 Google Analytics 收集详细分析数据](https://angular.io/analytics)。
+  你必须明确选择加入。
+  如果你想在组织内跟踪 Angular 使用情况，你可以将跟踪 ID 更改为指向你自己的 Google Analytics 属性。
+- Homebrew 将指标发送到 Google Analytics 并有[一个很好的 FAQ](https://docs.brew.sh/Analytics) 详细说明他们的做法。
+- Next.js [收集匿名使用统计数据](https://nextjs.org/telemetry)，默认启用。
 
-**Consider alternatives to collecting analytics.**
+**考虑收集分析数据的替代方案。**
 
-- Instrument your web docs.
-  If you want to know how people are using your CLI tool, make a set of docs around the use cases you’d like to understand best, and see how they perform over time.
-  Look at what people search for within your docs.
-- Instrument your downloads.
-  This can be a rough metric to understand usage and what operating systems your users are running.
-- Talk to your users.
-  Reach out and ask people how they’re using your tool.
-  Encourage feedback and feature requests in your docs and repos, and try to draw out more context from those who submit feedback.
+- 检测你的网页文档。
+  如果你想知道人们如何使用你的 CLI 工具，围绕你想要最好理解的用例制作一组文档，看看它们随时间的表现如何。
+  看看人们在你的文档中搜索什么。
+- 检测你的下载。
+  这可以是一个粗略的指标来了解使用情况和用户运行的操作系统。
+- 与你的用户交谈。
+  联系并询问人们如何使用你的工具。
+  在你的文档和仓库中鼓励反馈和功能请求，并尝试从提交反馈的人那里获取更多上下文。
 
-_Further reading: [Open Source Metrics](https://opensource.guide/metrics/)_
+_延伸阅读：[Open Source Metrics](https://opensource.guide/metrics/)_
 
-## Further reading
+## 延伸阅读 {#further-reading}
 
 - [The Unix Programming Environment](https://en.wikipedia.org/wiki/The_Unix_Programming_Environment), Brian W. Kernighan and Rob Pike
 - [POSIX Utility Conventions](https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap12.html)
