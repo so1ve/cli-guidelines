@@ -1,10 +1,8 @@
-# Command Line Interface Guidelines
+# 命令行界面设计指南（中文翻译）
 
-An open-source guide to help you write better command-line programs, taking traditional UNIX principles and updating them for the modern day.
+本项目是 [Command Line Interface Guidelines](https://clig.dev/) 的中文翻译。
 
-This is the source code for the guide. To read it, go to [clig.dev](https://clig.dev/).
-
-[Join us on Discord](https://discord.gg/EbAW5rUCkE) if you want to discuss the guide, or just chat about CLI design.
+原项目地址：[cli-guidelines/cli-guidelines](https://github.com/cli-guidelines/cli-guidelines)
 
 ## Contributing
 

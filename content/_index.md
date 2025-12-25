@@ -1,6 +1,6 @@
 # 命令行界面设计指南 {#command-line-interface-guidelines}
 
-这是一份[开源](https://github.com/cli-guidelines/cli-guidelines)指南，旨在帮助你编写更好的命令行程序。它以传统 UNIX 原则为基础，并针对现代需求进行了更新。
+这是 [Command Line Interface Guidelines](https://clig.dev/) 的中文翻译，基于 [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) 协议[开源](https://github.com/onevcat/cli-guidelines)。本指南旨在帮助你编写更好的命令行程序，以传统 UNIX 原则为基础，并针对现代需求进行了更新。
 
 ## 作者 {#authors}
 
